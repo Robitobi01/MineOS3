@@ -65,11 +65,88 @@ li.accordion-group a, ul.nav, .pointer  {
 
 .table-hover tbody tr:hover > td,
 .table-hover tbody tr:hover > td{
-	background-color: #ddd !important;
+	background-color: #c9c9c9 !important;
 	border-top: none;
 	padding-top: 9px;
 }
 
 #delete_server label {
 	padding-left: 0;
+}
+
+/* Dark theme modifications */
+#wrapper {
+    background: #303030;
+}
+
+.widget {
+	background-color: #808080;
+}
+
+.widget h5 {
+	color: #303030;
+    text-shadow: none;
+}
+
+
+#sidebar::before {
+    background-color: #303030;
+}
+
+body {
+    color: #c9c9c9;
+    font-size: 16px;
+    text-shadow: none !important;
+}
+
+body::before {
+    background: #808080 !important;
+}
+
+.stats {
+    background-color: #c9c9c9;
+}
+
+h4 {
+    color: #c9c9c9;
+    text-shadow: none !important;
+}
+
+#main > .navbar .navbar-inner {
+    background: #303030;
+    border: none;
+}
+
+#table_status tr td:first-child {
+    color: #c9c9c9;
+}
+
+.table-hover tbody tr:hover > td {
+    background-color: #808080 !important;
+    color: #303030;
+    border-top: 1px solid #c9c9c9;
+}
+
+.widget > header {
+    background-color: #c9c9c9;
+}
+
+.widget h4 {
+    color: #303030;
+}
+
+.breadcrumb > li {
+    text-shadow: none;
+}
+
+#logs tbody {
+    background-color: #303030;
+}
+
+a {
+    color: #303030;
+}
+
+.stats figcaption small {
+    color: #303030;
 }

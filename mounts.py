@@ -190,8 +190,8 @@ class ViewModel(object):
         from pwd import getpwnam
         from stock_profiles import STOCK_PROFILES
         
-        kb_free = dict(entries('', 'meminfo'))['MemFree']
-        mb_free = str(round(float(kb_free.split()[0])/1000, 2))
+        kb_free = dict(entries('', 'meminfo'))['MemAvailable']
+        gb_free = str(round(float(kb_free.split()[0])/1000/1000, 3)) + ' GB'
 
         try:
             pc_path = os.path.join(self.base_directory, mc.DEFAULT_PATHS['profiles'], 'profile.config')
@@ -208,7 +208,7 @@ class ViewModel(object):
     
         return {
             'uptime': int(proc_uptime()[0]),
-            'memfree': mb_free,
+            'memfree': gb_free,
             'whoami': self.login,
             'group': primary_group,
             'df': dict(disk_free(cherrypy.config['misc.base_directory'])._asdict()),
@@ -254,14 +254,7 @@ class Root(object):
     @require()
     def index(self):
         from cherrypy.lib.static import serve_file
-
-        try:
-            return serve_file(os.path.join(self.html_directory,
-                                           'index_%s.html' % cherrypy.config['misc.localization']))
-        except cherrypy.NotFound:
-            return serve_file(os.path.join(self.html_directory,
-                                           'index_en.html'))
-
+        return serve_file(os.path.join(self.html_directory, 'index.html'))
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @strongly_expire

@@ -265,13 +265,8 @@ if __name__ == "__main__":
     except:
         pass
 
-    try:
-        cherrypy.config['misc.localization'] = str(cherrypy.config['misc.localization']).lower()
-    except (KeyError, TypeError, AttributeError):
-        cherrypy.config['misc.localization'] = 'en'
-
-    cherrypy.tree.mount(mounts.Root(), "/", config=root_conf)
-    cherrypy.tree.mount(mounts.ViewModel(), "/vm", config=empty_conf)
-    cherrypy.tree.mount(auth.AuthController(), '/auth', config=empty_conf)
+    cherrypy.tree.mount(mounts.Root(), "/mineos/", config=root_conf)
+    cherrypy.tree.mount(mounts.ViewModel(), "/mineos/vm", config=empty_conf)
+    cherrypy.tree.mount(auth.AuthController(), '/mineos/auth', config=empty_conf)
     cherrypy.engine.start()
     cherrypy.engine.block()

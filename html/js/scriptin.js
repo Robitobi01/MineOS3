@@ -127,7 +127,7 @@ function model_property(server_name, option, value, section, new_prop) {
 			value: new_value,
 			section: self.section()
 		}
-		$.getJSON('/server', params)
+		$.getJSON('/mineos/server', params)
 	}
 
 	self.val.subscribe(function(value) {
@@ -152,7 +152,7 @@ function model_property(server_name, option, value, section, new_prop) {
 			value: self.val(),
 			section: self.section()
 		}
-		$.getJSON('/server', params).then(flash_success, flash_failure)
+		$.getJSON('/mineos/server', params).then(flash_success, flash_failure)
 	}, self)
 
 	self.check_type(option, section);
@@ -180,7 +180,7 @@ function model_profile(data) {
 			value: self.description(),
 			section: self.profile
 		}
-		$.getJSON('/host', params)
+		$.getJSON('/mineos/host', params)
 	}, self)
 }
 
@@ -351,7 +351,7 @@ function webui() {
 
 	self.reset_logs = function() {
 		self.vmdata.logs([]);
-		$.getJSON('/logs', {server_name: self.server().server_name, reset: true}).then(self.refresh.logs);
+		$.getJSON('/mineos/logs', {server_name: self.server().server_name, reset: true}).then(self.refresh.logs);
 	}
 
 	self.select_server = function(model) {
@@ -420,7 +420,7 @@ function webui() {
 		var params = self.import_information();
 		params['server_name'] = $('#import_server_modal').find('input[name="newname"]').val();
 
-		$.getJSON('/import_server', params).then(self.ajax.received, self.ajax.lost)
+		$.getJSON('/mineos/import_server', params).then(self.ajax.received, self.ajax.lost)
 										   .then(self.show_page('dashboard'));
 	}
 
@@ -430,7 +430,7 @@ function webui() {
 			server_name: self.server().server_name,
 			filename: self.pruning.archives.archives_to_delete
 		}
-		$.getJSON('/server', params).then(self.ajax.received, self.ajax.lost)
+		$.getJSON('/mineos/server', params).then(self.ajax.received, self.ajax.lost)
 									.then(function() {self.ajax.refresh(null)});
 	}
 
@@ -440,7 +440,7 @@ function webui() {
 			server_name: self.server().server_name,
 			step: self.pruning.increments.step
 		}
-		$.getJSON('/server', params).then(self.ajax.received, self.ajax.lost)
+		$.getJSON('/mineos/server', params).then(self.ajax.received, self.ajax.lost)
 									.then(function() {self.ajax.refresh(null)});
 	}
 
@@ -453,7 +453,7 @@ function webui() {
 			cmd: 'remove_profile',
 			profile: self.pruning.profiles.profile
 		}
-		$.getJSON('/host', params).then(self.ajax.received, self.ajax.lost)
+		$.getJSON('/mineos/host', params).then(self.ajax.received, self.ajax.lost)
 								  .then(function() {self.ajax.refresh(null)});
 	}
 
@@ -467,7 +467,7 @@ function webui() {
 		})
 
 		if (unchecked.length == 0) {
-			$.getJSON('/delete_server', params)
+			$.getJSON('/mineos/delete_server', params)
 			.then(self.ajax.received, self.ajax.lost)
 			.done(function(){ self.show_page('dashboard') },
 				  function(){})
@@ -487,14 +487,14 @@ function webui() {
 			server_name: self.server().server_name
 		}
 
-		$.getJSON('/change_group', params).then(self.ajax.received, self.ajax.lost)
+		$.getJSON('/mineos/change_group', params).then(self.ajax.received, self.ajax.lost)
 	}
 
 	self.change_pc_group = function(vm, eventobj) {
 		var params = {
 			group: $(eventobj.currentTarget).val()
 		}
-		$.getJSON('/change_pc_group', params).then(self.ajax.received, self.ajax.lost)
+		$.getJSON('/mineos/change_pc_group', params).then(self.ajax.received, self.ajax.lost)
 	}
 
 	self.command = function(vm, eventobj) {
@@ -514,10 +514,10 @@ function webui() {
 
 		if (required.indexOf('server_name') >= 0) {
 			$.extend(params, {server_name: self.server().server_name});
-			$.getJSON('/server', params).then(self.ajax.received, self.ajax.lost)
+			$.getJSON('/mineos/server', params).then(self.ajax.received, self.ajax.lost)
 										.then(function() {self.ajax.refresh(refresh_time)});
 		} else {
-			$.getJSON('/host', params).then(self.ajax.received, self.ajax.lost)
+			$.getJSON('/mineos/host', params).then(self.ajax.received, self.ajax.lost)
 									  .then(function() {self.ajax.refresh(refresh_time)});
 
 		}
@@ -529,21 +529,21 @@ function webui() {
 
 		switch(page) {
 			case 'dashboard':
-				$.getJSON('/vm/status').then(self.refresh.pings);
-				$.getJSON('/vm/dashboard').then(self.refresh.dashboard).then(self.redraw.gauges);
+				$.getJSON('/mineos/vm/status').then(self.refresh.pings);
+				$.getJSON('/mineos/vm/dashboard').then(self.refresh.dashboard).then(self.redraw.gauges);
 				self.redraw.chart();
 				break;
 			case 'backup_list':
-				$.getJSON('/vm/increments', params).then(self.refresh.increments);
+				$.getJSON('/mineos/vm/increments', params).then(self.refresh.increments);
 				break;
 			case 'archive_list':
-				$.getJSON('/vm/archives', params).then(self.refresh.archives);
+				$.getJSON('/mineos/vm/archives', params).then(self.refresh.archives);
 				break;	
 			case 'server_status':
-				$.getJSON('/vm/status').then(self.refresh.pings).then(self.redraw.gauges);
-				$.getJSON('/vm/increments', params).then(self.refresh.increments);
-				$.getJSON('/vm/archives', params).then(self.refresh.archives);
-				$.getJSON('/vm/server_summary', params).then(self.refresh.summary);
+				$.getJSON('/mineos/vm/status').then(self.refresh.pings).then(self.redraw.gauges);
+				$.getJSON('/mineos/vm/increments', params).then(self.refresh.increments);
+				$.getJSON('/mineos/vm/archives', params).then(self.refresh.archives);
+				$.getJSON('/mineos/vm/server_summary', params).then(self.refresh.summary);
 				setTimeout(function() {
 					$('#delete_server input[type="checkbox"]').not('.nostyle').iCheck({
 			            checkboxClass: 'icheckbox_minimal-grey',
@@ -553,25 +553,25 @@ function webui() {
 				}, 500)
 				break;
 			case 'profiles':
-				$.getJSON('/vm/profiles').then(self.refresh.profiles);
+				$.getJSON('/mineos/vm/profiles').then(self.refresh.profiles);
 				break;
 			case 'profile_view':
-				$.getJSON('/vm/profiles').then(self.refresh.profiles);
+				$.getJSON('/mineos/vm/profiles').then(self.refresh.profiles);
 				break;
 			case 'create_server':
-				$.getJSON('/vm/profiles').then(self.refresh.profiles);
+				$.getJSON('/mineos/vm/profiles').then(self.refresh.profiles);
 				break;
 			case 'server_properties':
-				$.getJSON('/server', $.extend({}, params, {'cmd': 'sp'})).then(self.refresh.sp);
+				$.getJSON('/mineos/server', $.extend({}, params, {'cmd': 'sp'})).then(self.refresh.sp);
 				break;
 			case 'server_config':
-				$.getJSON('/server', $.extend({}, params, {'cmd': 'sc'})).then(self.refresh.sc);
+				$.getJSON('/mineos/server', $.extend({}, params, {'cmd': 'sc'})).then(self.refresh.sc);
 				break;
 			case 'importable':
-				$.getJSON('/vm/importable', {}).then(self.refresh.importable);
+				$.getJSON('/mineos/vm/importable', {}).then(self.refresh.importable);
 				break;
 			case 'console':
-				$.getJSON('/logs', params).then(self.refresh.logs);
+				$.getJSON('/mineos/logs', params).then(self.refresh.logs);
 				break;
 			default:
 				break;			
@@ -678,7 +678,7 @@ function webui() {
 			'group': group
 		}
 
-		$.getJSON('/create', params)
+		$.getJSON('/mineos/create', params)
 		.then(self.ajax.received, self.ajax.lost)
 		.done(function() {
 			self.show_page('dashboard');
@@ -695,7 +695,7 @@ function webui() {
             server_name: self.server().server_name
         }
 
-        $.getJSON('/server', params)
+        $.getJSON('/mineos/server', params)
         .then(self.ajax.received, self.ajax.lost).then(function() {
             self.ajax.refresh(null);
             user_input.val('');
@@ -724,7 +724,7 @@ function webui() {
 			'profile_dict': JSON.stringify(properties),
 		}
 
-		$.getJSON('/host', params)
+		$.getJSON('/mineos/host', params)
 		.then(self.ajax.received, self.ajax.lost)
 		.done(function() {
 			self.show_page('profiles');
@@ -959,7 +959,7 @@ function webui() {
 	        		return
 	        	}
 
-	        	$.getJSON('/vm/loadavg').then(rerender);
+	        	$.getJSON('/mineos/vm/loadavg').then(rerender);
 				setTimeout(update, self.refresh_loadavg);
 	        }   
 	        update();

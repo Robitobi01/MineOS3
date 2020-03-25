@@ -56,9 +56,9 @@ def check_auth(*args, **kwargs):
             for condition in conditions:
                 # A condition is just a callable that returns true or false
                 if not condition():
-                    raise cherrypy.HTTPRedirect("/auth/login")
+                    raise cherrypy.HTTPRedirect("/mineos/auth/login")
         else:
-            raise cherrypy.HTTPRedirect("/auth/login")
+            raise cherrypy.HTTPRedirect("/mineos/auth/login")
     
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
 
@@ -89,16 +89,10 @@ class AuthController(object):
     def get_loginform(self):
         import os
         from cherrypy.lib.static import serve_file
-
-        try:
-            return serve_file(os.path.join(self.html_directory,
-                                           'login_%s.html' % cherrypy.config['misc.localization']))
-        except cherrypy.NotFound:
-            return serve_file(os.path.join(self.html_directory,
-                                           'login_en.html'))
+        return serve_file(os.path.join(self.html_directory, 'login.html'))
     
     @cherrypy.expose
-    def login(self, username=None, password=None, hide=None, from_page='/'):
+    def login(self, username=None, password=None, hide=None, from_page='/mineos/'):
         if not username or not password:
             return self.get_loginform()
 
@@ -115,7 +109,7 @@ class AuthController(object):
                 cherrypy.session.regenerate()
                 cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
                 self.on_login(username)
-                raise cherrypy.HTTPRedirect("/")
+                raise cherrypy.HTTPRedirect("/mineos/")
             else:
                 return self.get_loginform()
     
@@ -127,4 +121,4 @@ class AuthController(object):
         if username:
             cherrypy.request.login = None
             self.on_logout(username)
-        raise cherrypy.HTTPRedirect("/index")
+        raise cherrypy.HTTPRedirect("/mineos/index")

@@ -374,7 +374,7 @@ form .input-icon {
 .btn.disabled,
 .btn[disabled] {
 	outline: none;
-	background-color: #ddd;
+	background-color: #c9c9c9;
 }
 .btn:active,
 .btn.active { background-color: #eee \9; }
@@ -565,7 +565,7 @@ form .input-icon {
 .pagination ul > .disabled > a, 
 .pagination ul > .disabled > a:hover, 
 .pagination ul > .disabled > a:focus {
-	border-color: #ddd;
+	border-color: #c9c9c9;
 	background-color: transparent;
 }
 .pager li > a, 
@@ -832,7 +832,7 @@ ul.check li:last-child {
 /* 0.12 Modal
 ----------------------------------------------------------------------------- */
 .modal {
-	border: 1px solid #ddd;
+	border: 1px solid #c9c9c9;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
@@ -1387,7 +1387,7 @@ ul.check li:last-child {
 	outline: none;
 	text-decoration: none;
 	border: 1px solid #9e0e2b; /* -4 */
-	color: #ddd;
+	color: #c9c9c9;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2);
@@ -1880,7 +1880,7 @@ ul.check li:last-child {
 	padding: 10px 10px 10px 34px;
 	border-top: 1px solid #666;
 	border-bottom: 1px solid #555;
-	color: #ddd;
+	color: #c9c9c9;
 	text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.15);
 	-webkit-transition: color .3s ease;
 	-moz-transition: color .3s ease;
@@ -1936,7 +1936,7 @@ ul.check li:last-child {
 	display: block;
 	padding: 10px 10px 10px 54px;
 	border-bottom: 1px solid #5f5f5f;
-	color: #ddd;
+	color: #c9c9c9;
 	text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.15);
 	-webkit-transition: color .3s ease;
 	-moz-transition: color .3s ease;
@@ -2127,7 +2127,7 @@ ul.check li:last-child {
 .widget-placeholder {
 	width: auto;
 	height: 153px;
-	border: 1px dashed #ddd;
+	border: 1px dashed #c9c9c9;
 	background-color: #eee;
 }
 .widget-modal {
@@ -2800,7 +2800,7 @@ ul.check li:last-child {
 	position: relative;
 	margin: 0px 0px 0px 60px;
 	padding: 5px;
-	border: 1px solid #dddddd; 
+	border: 1px solid #c9c9c9ddd; 
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	background: #f5f5f5;
@@ -2829,8 +2829,8 @@ ul.check li:last-child {
 	border-width: 11px;
 	border-color: rgba(221, 221, 13, 0);
 }
-.widget.widget-message .body-inner ul > li.left > figure > figcaption:before { right: 100%; border-right-color: #dddddd; }
-.widget.widget-message .body-inner ul > li.right > figure > figcaption:before { left: 100%; border-left-color: #dddddd; }
+.widget.widget-message .body-inner ul > li.left > figure > figcaption:before { right: 100%; border-right-color: #c9c9c9ddd; }
+.widget.widget-message .body-inner ul > li.right > figure > figcaption:before { left: 100%; border-left-color: #c9c9c9ddd; }
 .widget.widget-message .body-inner ul > li.right > figure > figcaption {
 	margin: 0px 60px 0px 0px;
 	text-align: right;

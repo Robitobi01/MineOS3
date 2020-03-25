@@ -24,7 +24,6 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/custom.css">
     <link rel="stylesheet" id="base-color" href="css/color/serene.css"><!-- Base Theme Color -->
-    <link rel="stylesheet" id="base-bg" href="css/background/bg1.css"><!-- Boxed Background -->
     <!--/ Stylesheet(Application) -->
 
     <!-- Stylesheet(Plugins) -->
@@ -86,7 +85,7 @@
                                 </li>
                             </ul>
                             <footer>
-                                <a href="/auth/logout" class="text"><span class="icon icone-off"></span> Sign Off</a>
+                                <a href="/mineos/auth/logout" class="text"><span class="icon icone-off"></span> Sign Off</a>
                             </footer>
                         </div>
                         <!--/ END Dropdown Menu -->
@@ -146,7 +145,7 @@
                                     <li class="accordion-group" data-bind="css: {'active': page() == 'importable'}">
                                         <a data-bind="click: show_page" data-page="importable">
                                             <span class="icon icone-share"></span>
-                                            <span class="text">Create Server from Archive</span>
+                                            <span class="text">Import A Server</span>
                                             <span class=""></span>
                                         </a>
                                     </li>
@@ -297,7 +296,7 @@
                                         <figure class="stats summary">
                                             <div class="icon circle teal"><span class="icone-ticket"></span></div>
                                             <figcaption>
-                                                <h3><span data-bind="text: dashboard.memfree"></span><small>MB RAM Free</small></h3>
+                                                <h3><span data-bind="text: dashboard.memfree"></span><small>RAM Free</small></h3>
                                             </figcaption>
                                         </figure>
                                         <!--/ END Summary -->
@@ -392,7 +391,7 @@
                                     <!--/ END Summary -->
 
                                     <!-- START Circular 1 -->
-                                    <figure class="stats circular stacked">
+                                    <figure class="stats circular">
                                         <div class="gauge" data-bind="attr: {'data-percent': online_pct}" data-percent="">
                                             <span><span class="text" data-bind="text: online_pct"></span>%</span>
                                         </div>
@@ -402,7 +401,7 @@
                                     </figure><!--/ END Circular 1 -->
 
                                     <!-- START Circular 2 -->
-                                    <figure class="stats circular stacked">
+                                    <figure class="stats circular">
                                         <div class="gauge" data-bind="attr: {'data-percent': memory_pct}" data-percent="">
                                             <span class="text" data-bind="text: memory_pct() + '%', style: {color: overextended() ? 'orange' : 'black'}"></span>
                                         </div>
@@ -1371,10 +1370,10 @@ Is the information correct? [Y/n]
                     <!-- START Row -->
                     <div class="row-fluid">
                         <!-- START Datatable 1 -->
-                        <div class="span12 widget stacked">
+                        <div class="span12 widget">
                             <section class="body">
                                 <div class="body-inner no-padding">
-                                    <table class="table table-bordered table-striped table-hover" id="logs">
+                                    <table class="table table-bordered table-hover" id="logs">
                                         <thead>
                                             <tr>
                                                 <th>Entry
