@@ -942,10 +942,11 @@ function webui() {
 				    { label: "one", data: enumerate(self.load_averages['one']), color: "#E8E800" }
 	        	]
 
-	        	self.load_averages.options.yaxis.max = Math.max(
-					self.load_averages.one.max(),
-					self.load_averages.five.max(),
-					self.load_averages.fifteen.max()) || 1;
+	        	self.load_averages.options.yaxis.max = 100;
+// 	        	self.load_averages.options.yaxis.max = Math.max(
+// 					self.load_averages.one.max(),
+// 					self.load_averages.five.max(),
+// 					self.load_averages.fifteen.max()) || 1;
 
 	        	var plot = $.plot($("#load_averages"), dataset, self.load_averages.options);
 	            plot.draw();
