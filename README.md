@@ -1,20 +1,24 @@
-This is the github repository for MineOS Minecraft hosting and management scripts.
+![MineOS3](https://raw.githubusercontent.com/Robitobi01/MineOS3/master/html/img/logo-login.png)
 
-While MineOS can always be found with a distributable ISO (currently Turnkey), these scripts are distro-agnostic and can be installed atop any Linux or BSD system. See the wiki for details.
+###Custom Minecraft hosting and management scripts.
 
-Features
-========
 
-- Web user interface with modern Knockout templating
-- Scheduled backups, archives, and restarts
-- Command-line scriptable
-- Leverages host system's existing user passwords (/etc/shadow) and HTTPS
-- Shared administration functionality using group permissions
-- Works on Linux and BSD
+The Web Interface is now styled in a darker theme.
 
-Tutorials
-=========
+There are some features in the original MineOS scripts that I didn't bother testing or that I simply removed.
+For example profiles, md5 hashes, git hash checks, legacy mc versions and more. I switched to using the default pam library and replaced the custom server list ping code by mcstatus.
 
-Installation tutorial: http://minecraft.codeemo.com/mineoswiki/index.php?title=Installing_MineOS
+The root path was changed from / to /mineos to allow reverse proxying MineOS3 on a normal webserver as a subdirectory
 
-Youtube Instructions: http://www.youtube.com/watch?v=idEAnpa4yUQ&feature=share&list=UUTdhIeaydDUDLCDSN7PEBaQ
+
+**Required libraries:**
+- mcstatus
+
+**Required tools:**
+- screen
+- rsync
+- rdiff-backup
+
+#
+
+All credit goes to William Dizon "hexparrot" for the original scripts | [MineOS](https://github.com/hexparrot/mineos)

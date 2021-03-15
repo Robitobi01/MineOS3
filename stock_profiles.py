@@ -1,12 +1,4 @@
-"""A python script to manage minecraft servers
-   Designed for use with MineOS: http://minecraft.codeemo.com
-"""
 
-__author__ = "William Dizon"
-__license__ = "GNU GPL v3.0"
-__version__ = "0.6.0"
-__email__ = "wdchromium@gmail.com"
- 
 STOCK_PROFILES = [
     {
         'name': 'vanilla111',
