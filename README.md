@@ -1,6 +1,7 @@
 ![MineOS3](https://raw.githubusercontent.com/Robitobi01/MineOS3/master/html/img/logo-login.png)
 
-###Custom Minecraft hosting and management scripts.
+
+### Custom Minecraft hosting and management scripts.
 
 
 The Web Interface is now styled in a darker theme.
