@@ -1,4 +1,6 @@
-MineOS is released under the GNU GPL v3.
+MineOS3 is released under the GNU GPL v3.
+
+Credit for the original python 2.7 mineos scripts to "hexparrot" William Dizon https://github.com/hexparrot
 
 The web-ui theme used is Cleanizr, and is licensed separately under the [Envato Regular License](http://themeforest.net/licenses/regular).
 

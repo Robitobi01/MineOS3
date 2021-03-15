@@ -1,19 +1,16 @@
-# -*- encoding: UTF-8 -*-
-#
-# Form based authentication for CherryPy. Requires the
-# Session tool to be loaded.
-#
+import os
+from crypt import crypt
+from pwd import getpwnam
+from spwd import getspnam
 
 import cherrypy
+import pam
+from cherrypy.lib.static import serve_file
 
 SESSION_KEY = '_cp_username'
 
-def check_credentials(username, password):
-    """Verifies credentials for username and password.
-    Returns None on success or a string describing the error on failure"""
-    from spwd import getspnam
-    from crypt import crypt
 
+def check_credentials(username, password):
     try:
         enc_pwd = getspnam(username)[1]
     except KeyError:
@@ -31,11 +28,8 @@ def check_credentials(username, password):
         else:
             raise OSError('incorrect password')
 
+
 def unix_authenticate(username, password):
-    """Fallback authentication for BSD"""
-    from crypt import crypt
-    from pwd import getpwnam
-    
     cryptedpasswd = getpwnam(username)[1]
     if cryptedpasswd:
         if cryptedpasswd == 'x' or cryptedpasswd == '*':
@@ -44,10 +38,8 @@ def unix_authenticate(username, password):
     else:
         return False
 
+
 def check_auth(*args, **kwargs):
-    """A tool that looks in config for 'auth.require'. If found and it
-    is not None, a login is required and the entry is evaluated as a list of
-    conditions that the user must fulfill"""
     conditions = cherrypy.request.config.get('auth.require', None)
     if conditions is not None:
         username = cherrypy.session.get(SESSION_KEY)
@@ -59,12 +51,12 @@ def check_auth(*args, **kwargs):
                     raise cherrypy.HTTPRedirect("/mineos/auth/login")
         else:
             raise cherrypy.HTTPRedirect("/mineos/auth/login")
-    
+
+
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
 
+
 def require(*conditions):
-    """A decorator that appends conditions to the auth.require config
-    variable."""
     def decorate(f):
         if not hasattr(f, '_cp_config'):
             f._cp_config = dict()
@@ -72,7 +64,9 @@ def require(*conditions):
             f._cp_config['auth.require'] = []
         f._cp_config['auth.require'].extend(conditions)
         return f
+
     return decorate
+
 
 # Controller to provide login and logout actions
 
@@ -82,25 +76,22 @@ class AuthController(object):
 
     def on_login(self, username):
         """Called on successful login"""
-    
+
     def on_logout(self, username):
         """Called on logout"""
-    
+
     def get_loginform(self):
-        import os
-        from cherrypy.lib.static import serve_file
         return serve_file(os.path.join(self.html_directory, 'login.html'))
-    
+
     @cherrypy.expose
     def login(self, username=None, password=None, hide=None, from_page='/mineos/'):
         if not username or not password:
             return self.get_loginform()
 
         validated = False
-        try:      
+        try:
             validated = check_credentials(username, password)
         except OSError:
-            import pam
             validated = pam.authenticate(username, password)
         except ImportError:
             validated = unix_authenticate(username, password)
@@ -112,7 +103,7 @@ class AuthController(object):
                 raise cherrypy.HTTPRedirect("/mineos/")
             else:
                 return self.get_loginform()
-    
+
     @cherrypy.expose
     def logout(self):
         sess = cherrypy.session

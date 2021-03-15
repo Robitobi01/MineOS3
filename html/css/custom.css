@@ -62,14 +62,12 @@ li.accordion-group a, ul.nav, .pointer  {
 	font-size: 90%;
 	font-weight: normal;
 }
-
 .table-hover tbody tr:hover > td,
 .table-hover tbody tr:hover > td{
 	background-color: #c9c9c9 !important;
 	border-top: none;
 	padding-top: 9px;
 }
-
 #delete_server label {
 	padding-left: 0;
 }
@@ -78,76 +76,104 @@ li.accordion-group a, ul.nav, .pointer  {
 #wrapper {
     background: #303030;
 }
-
+#header {
+    background-color: #666 !important;
+    border-bottom: 2px solid #666 !important;
+}
 .widget {
 	background-color: #808080;
 }
-
 .widget h5 {
 	color: #303030;
     text-shadow: none;
 }
-
-
 #sidebar::before {
     background-color: #303030;
 }
-
 body {
     color: #c9c9c9;
     background-color: #808080;
     font-size: 16px;
     text-shadow: none !important;
 }
-
 body::before {
     background: #808080 !important;
 }
-
 .stats {
     background-color: #c9c9c9;
 }
-
 h4 {
     color: #c9c9c9;
     text-shadow: none !important;
 }
-
 #main > .navbar .navbar-inner {
     background: #303030;
     border: none;
 }
-
 #table_status tr td:first-child {
     color: #c9c9c9;
 }
-
 .table-hover tbody tr:hover > td {
     background-color: #808080 !important;
     color: #303030;
     border-top: 1px solid #c9c9c9;
 }
-
 .widget > header {
     background-color: #c9c9c9;
 }
-
 .widget h4 {
     color: #303030;
 }
-
 .breadcrumb > li {
     text-shadow: none;
 }
-
 #logs tbody {
     background-color: #303030;
 }
-
 a {
     color: #303030;
 }
-
 .stats figcaption small {
     color: #303030;
+}
+.btn[disabled] {
+	outline: none;
+	background-color: #c9c9c9;
+}
+.pagination ul > .disabled > a:focus {
+	border-color: #c9c9c9;
+	background-color: transparent;
+}
+.modal {
+	border: 1px solid #c9c9c9;
+}
+#header > .toggler {
+    color: #c9c9c9;
+}
+#sidebar #nav > ul > li > ul > li > a {
+    color: #c9c9c9;
+}
+#sidebar #nav > ul ul ul > li > a {
+    color: #c9c9c9;
+}
+.widget-placeholder {
+    border: 1px dashed #c9c9c9;
+}
+.widget.widget-message .body-inner ul > li > figure > figcaption {
+    border: 1px solid #c9c9c9ddd;
+}
+.widget.widget-message .body-inner ul > li.left > figure > figcaption:before {
+    right: 100%;
+    border-right-color: #c9c9c9;
+}
+.widget.widget-message .body-inner ul > li.right > figure > figcaption:before {
+    left: 100%;
+    border-left-color: #c9c9c9;
+}
+.fixed-sidebar #footer {
+    color: #c9c9c9;
+}
+#sidebar .divider {
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
 }

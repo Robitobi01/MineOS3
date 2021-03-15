@@ -374,7 +374,7 @@ form .input-icon {
 .btn.disabled,
 .btn[disabled] {
 	outline: none;
-	background-color: #c9c9c9;
+	background-color: #ddd;
 }
 .btn:active,
 .btn.active { background-color: #eee \9; }
@@ -495,7 +495,7 @@ form .input-icon {
 	border-bottom-left-radius: 2px;
 	webkit-border-bottom-left-radius: 2px;
 }
-.btn-group > .btn:last-child, 
+.btn-group > .btn:last-child,
 .btn-group > .dropdown-toggle {
 	-moz-border-radius-topright: 2px;
 	border-top-right-radius: 2px;
@@ -504,8 +504,8 @@ form .input-icon {
 	border-bottom-right-radius: 2px;
 	webkit-border-top-right-radius: 2px;
 }
-.btn-group > .btn, 
-.btn-group > .dropdown-menu, 
+.btn-group > .btn,
+.btn-group > .dropdown-menu,
 .btn-group > .popover { font-size: 12px; }
 .btn-group > .btn-large { font-size: 17px; }
 .btn-group > .btn-small { font-size: 11px; }
@@ -533,7 +533,7 @@ form .input-icon {
 	-moz-box-shadow: none;
 	box-shadow: none;
 }
-.pagination ul > li > a, 
+.pagination ul > li > a,
 .pagination ul > li > span {
 	margin: 1px;
 	border-left-width: 1px;
@@ -543,38 +543,38 @@ form .input-icon {
 	color: #555;
 	line-height: 18px;
 }
-.pagination ul > li:first-child > a, 
+.pagination ul > li:first-child > a,
 .pagination ul > li:first-child > span {
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 }
-.pagination ul > li:last-child > a, 
+.pagination ul > li:last-child > a,
 .pagination ul > li:last-child > span {
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 }
-.pagination ul > li > a:hover, 
-.pagination ul > li > a:focus, 
-.pagination ul > .active > a, 
+.pagination ul > li > a:hover,
+.pagination ul > li > a:focus,
+.pagination ul > .active > a,
 .pagination ul > .active > span {
 	border-color: #bd1134; /* -2 */
 	background-color: #dc143c; /* 0 */
 	color: #eee;
 }
-.pagination ul > .disabled > span, 
-.pagination ul > .disabled > a, 
-.pagination ul > .disabled > a:hover, 
+.pagination ul > .disabled > span,
+.pagination ul > .disabled > a,
+.pagination ul > .disabled > a:hover,
 .pagination ul > .disabled > a:focus {
-	border-color: #c9c9c9;
+	border-color: #ddd;
 	background-color: transparent;
 }
-.pager li > a, 
+.pager li > a,
 .pager li > span {
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
 	background-color: #fefefe;
 }
-.pager li > a:hover, 
+.pager li > a:hover,
 .pager li > a:focus { background-color: #f9f9f9; }
 /* 0.5 Dropdown Menu
 ----------------------------------------------------------------------------- */
@@ -605,12 +605,12 @@ form .input-icon {
 	font-size: 14px;
 }
 .dropdown-menu .divider { display: none; }
-.dropdown-menu > li > a:hover, 
-.dropdown-menu > li > a:focus, 
-.dropdown-submenu:hover > a, 
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus,
+.dropdown-submenu:hover > a,
 .dropdown-submenu:focus > a,
-.dropdown-menu > .active > a, 
-.dropdown-menu > .active > a:hover, 
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
 .dropdown-menu > .active > a:focus {
 	background: #f5f5f5;
 	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y1ZjVmNSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmNWY1ZjUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
@@ -781,8 +781,8 @@ ul.check li:last-child {
 .page-header h3,
 .page-header h4,
 .page-header h5,
-.page-header h6 { 
-	margin-top: 0; 
+.page-header h6 {
+	margin-top: 0;
 	text-shadow: 0px 1px 0px #fff;
 }
 .page-header h1 small,
@@ -790,7 +790,7 @@ ul.check li:last-child {
 .page-header h3 small,
 .page-header h4 small,
 .page-header h5 small,
-.page-header h6 small { 
+.page-header h6 small {
 	padding-left: 5px;
 	font-size: 70%;
 }
@@ -832,7 +832,7 @@ ul.check li:last-child {
 /* 0.12 Modal
 ----------------------------------------------------------------------------- */
 .modal {
-	border: 1px solid #c9c9c9;
+	border: 1px solid #ddd;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
@@ -945,8 +945,8 @@ ul.check li:last-child {
 	top: -1px;
 	left: 0;
 }
-.nav-tabs .open .dropdown-toggle, 
-.nav-tabs > li.dropdown.open.active > a:hover, 
+.nav-tabs .open .dropdown-toggle,
+.nav-tabs > li.dropdown.open.active > a:hover,
 .nav-tabs > li.dropdown.open.active > a:focus {
 	border: none;
 	border-top: 1px solid #e5e5e5;
@@ -1005,10 +1005,10 @@ ul.check li:last-child {
     border: 1px solid #e5e5e5;
     border-bottom: transparent;
 }
-.tabs-below > .nav-tabs > li > a:hover, 
+.tabs-below > .nav-tabs > li > a:hover,
 .tabs-below > .nav-tabs > li > a:focus { border-bottom-color: #e5e5e5; }
-.tabs-below > .nav-tabs > .active > a, 
-.tabs-below > .nav-tabs > .active > a:hover, 
+.tabs-below > .nav-tabs > .active > a,
+.tabs-below > .nav-tabs > .active > a:hover,
 .tabs-below > .nav-tabs > .active > a:focus {
 	border-top: 1px solid transparent;
 	border-bottom: 1px solid #e5e5e5;
@@ -1032,8 +1032,8 @@ ul.check li:last-child {
 .widget .tabs-below > .nav-tabs > li > a,
 .widget .tabs-below > .nav-tabs > .active > a:hover,
 .widget .tabs-below > .nav-tabs > .active > a:focus { border-bottom-color: transparent; }
-.widget .tabs-below > .nav-tabs > li:first-child > a, 
-.widget .tabs-below > .nav-tabs > .active:first-child > a:hover, 
+.widget .tabs-below > .nav-tabs > li:first-child > a,
+.widget .tabs-below > .nav-tabs > .active:first-child > a:hover,
 .widget .tabs-below > .nav-tabs > .active:first-child > a:focus { border-left-color: transparent; }
 /* Tabs Position - Left */
 .tabs-left {
@@ -1059,8 +1059,8 @@ ul.check li:last-child {
 	border-top: none;
 	border-left: none;
 }
-.tabs-left > .nav-tabs .active > a, 
-.tabs-left > .nav-tabs .active > a:hover, 
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
 .tabs-left > .nav-tabs .active > a:focus {
 	border-color: #e5e5e5;
 	border-right: 1px solid transparent;
@@ -1075,7 +1075,7 @@ ul.check li:last-child {
 	top: 0;
 	bottom: 0;
 }
-.tabs-left > .nav-tabs > li > a:hover, 
+.tabs-left > .nav-tabs > li > a:hover,
 .tabs-left > .nav-tabs > li > a:focus { border-color: #e5e5e5; }
 .widget .tabs-left { border: none; }
 .widget .tabs-left > .nav-tabs { margin-right: 0px; }
@@ -1087,8 +1087,8 @@ ul.check li:last-child {
 .widget .tabs-left > .nav-tabs > li > a,
 .widget .tabs-left > .nav-tabs > .active > a:hover,
 .widget .tabs-left > .nav-tabs > .active > a:focus { border-left-color: transparent; }
-.widget .tabs-left > .nav-tabs > li:first-child > a, 
-.widget .tabs-left > .nav-tabs > .active:first-child > a:hover, 
+.widget .tabs-left > .nav-tabs > li:first-child > a,
+.widget .tabs-left > .nav-tabs > .active:first-child > a:hover,
 .widget .tabs-left > .nav-tabs > .active:first-child > a:focus { border-left-color: transparent; }
 /* Tabs Position - Right */
 .tabs-right {
@@ -1115,8 +1115,8 @@ ul.check li:last-child {
 	border-top: none;
 	border-right: none;
 }
-.tabs-right > .nav-tabs .active > a, 
-.tabs-right > .nav-tabs .active > a:hover, 
+.tabs-right > .nav-tabs .active > a,
+.tabs-right > .nav-tabs .active > a:hover,
 .tabs-right > .nav-tabs .active > a:focus {
 	border-color: #e5e5e5;
 	border-right: none;
@@ -1133,7 +1133,7 @@ ul.check li:last-child {
 	top: 0;
 	bottom: 0;
 }
-.tabs-right > .nav-tabs > li > a:hover, 
+.tabs-right > .nav-tabs > li > a:hover,
 .tabs-right > .nav-tabs > li > a:focus { border-color: #e5e5e5; }
 .widget .tabs-right { border: none; }
 .widget .tabs-right > .nav-tabs { margin-left: 0px; }
@@ -1141,8 +1141,8 @@ ul.check li:last-child {
 .widget .tabs-right > .nav-tabs > li > a,
 .widget .tabs-right > .nav-tabs > .active > a:hover,
 .widget .tabs-right > .nav-tabs > .active > a:focus { border-right-color: transparent; }
-.widget .tabs-right > .nav-tabs > li:first-child > a, 
-.widget .tabs-right > .nav-tabs > .active:first-child > a:hover, 
+.widget .tabs-right > .nav-tabs > li:first-child > a,
+.widget .tabs-right > .nav-tabs > .active:first-child > a:hover,
 .widget .tabs-right > .nav-tabs > .active:first-child > a:focus { border-right-color: transparent; }
 
 /* 0.16 Pills & List
@@ -1154,8 +1154,8 @@ ul.check li:last-child {
 	border-radius: 2px;
 	color: #555;
 }
-.nav-pills > .active > a, 
-.nav-pills > .active > a:hover, 
+.nav-pills > .active > a,
+.nav-pills > .active > a:hover,
 .nav-pills > .active > a:focus { background-color: #dc143c; /* 0 */ }
 /* Stacked Tabs */
 .nav-tabs.nav-stacked > li > a { border: 1px solid #e5e5e5; }
@@ -1175,15 +1175,15 @@ ul.check li:last-child {
 	-webkit-border-radius: 0px 0px 2px 2px;
 	border-radius: 0px 0px 2px 2px;
 }
-.nav-tabs.nav-stacked > li > a:hover, 
+.nav-tabs.nav-stacked > li > a:hover,
 .nav-tabs.nav-stacked > li > a:focus { border: 1px solid #e5e5e5; }
 .nav-tabs.nav-stacked > li:first-child > a:hover {
 	border-top: 1px solid #e5e5e5;
 	border-left: 1px solid #e5e5e5;
 }
 /* Nav List */
-.nav-list > .active > a, 
-.nav-list > .active > a:hover, 
+.nav-list > .active > a,
+.nav-list > .active > a:hover,
 .nav-list > .active > a:focus { background-color: #dc143c; }
 
 /* 0.17 Tables
@@ -1206,17 +1206,17 @@ ul.check li:last-child {
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 }
-.widget .body-inner .table-bordered thead:first-child tr:first-child > th:first-child, 
-.widget .body-inner .table-bordered tbody:first-child tr:first-child > td:first-child, 
+.widget .body-inner .table-bordered thead:first-child tr:first-child > th:first-child,
+.widget .body-inner .table-bordered tbody:first-child tr:first-child > td:first-child,
 .widget .body-inner .table-bordered tbody:first-child tr:first-child > th:first-child {
 	border-left: 0;
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 }
-.widget .body-inner .table-bordered thead:last-child tr:last-child > th:first-child, 
-.widget .body-inner .table-bordered tbody:last-child tr:last-child > td:first-child, 
-.widget .body-inner .table-bordered tbody:last-child tr:last-child > th:first-child, 
-.widget .body-inner .table-bordered tfoot:last-child tr:last-child > td:first-child, 
+.widget .body-inner .table-bordered thead:last-child tr:last-child > th:first-child,
+.widget .body-inner .table-bordered tbody:last-child tr:last-child > td:first-child,
+.widget .body-inner .table-bordered tbody:last-child tr:last-child > th:first-child,
+.widget .body-inner .table-bordered tfoot:last-child tr:last-child > td:first-child,
 .widget .body-inner .table-bordered tfoot:last-child tr:last-child > th:first-child {
 	border-left: 0;
 	-webkit-border-radius: 0px;
@@ -1345,7 +1345,7 @@ ul.check li:last-child {
 }
 /* Fixed Header + boxed layout - Added in v1.2.1 */
 .boxed-layout #header { width: auto; }
-.boxed-layout.fixed-header #header { 
+.boxed-layout.fixed-header #header {
 	width: auto;
 	right: 40px;
 	left: 40px;
@@ -1387,7 +1387,7 @@ ul.check li:last-child {
 	outline: none;
 	text-decoration: none;
 	border: 1px solid #9e0e2b; /* -4 */
-	color: #c9c9c9;
+	color: #ddd;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2);
@@ -1701,11 +1701,11 @@ ul.check li:last-child {
 	-webkit-box-shadow: 5px 0px 8px -5px rgba(0, 0, 0, 0.8);
 	box-shadow: 5px 0px 8px -5px rgba(0, 0, 0, 0.8);
 }
-.fixed-sidebar #sidebar { 
+.fixed-sidebar #sidebar {
 	position: fixed;
 	overflow: hidden;
 	bottom: 0px;
-	top: 52px; 
+	top: 52px;
 }
 .fixed-header #sidebar { top: 52px; }
 .boxed-layout.fixed-sidebar #sidebar { left: 40px; }
@@ -1750,7 +1750,7 @@ ul.check li:last-child {
 
 /* 1.3.2 Sidebar Navigation
 ----------------------------------------------------------------------------- */
-#sidebar #nav { 
+#sidebar #nav {
 	position: relative;
 	margin-bottom: 36px;
 }
@@ -1829,7 +1829,7 @@ ul.check li:last-child {
 	box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 }
 /* Main Menu Focus,Hover & Open State */
-#sidebar #nav > ul > li > a:focus, 
+#sidebar #nav > ul > li > a:focus,
 #sidebar #nav > ul > li > a:hover,
 #sidebar #nav > ul > li.open > a {
 	background-color: #585858;
@@ -1880,7 +1880,7 @@ ul.check li:last-child {
 	padding: 10px 10px 10px 34px;
 	border-top: 1px solid #666;
 	border-bottom: 1px solid #555;
-	color: #c9c9c9;
+	color: #ddd;
 	text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.15);
 	-webkit-transition: color .3s ease;
 	-moz-transition: color .3s ease;
@@ -1936,7 +1936,7 @@ ul.check li:last-child {
 	display: block;
 	padding: 10px 10px 10px 54px;
 	border-bottom: 1px solid #5f5f5f;
-	color: #c9c9c9;
+	color: #ddd;
 	text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.15);
 	-webkit-transition: color .3s ease;
 	-moz-transition: color .3s ease;
@@ -2018,8 +2018,8 @@ ul.check li:last-child {
 /* Navbar Toolbar */
 #main > .navbar .navbar-inner > .toolbar {
 	display: inline-block;
-	margin: 0; 
-	margin-left: 10px; 
+	margin: 0;
+	margin-left: 10px;
 }
 #main > .navbar .navbar-inner > .toolbar.pull-right {
 	margin-left: 0;
@@ -2127,7 +2127,7 @@ ul.check li:last-child {
 .widget-placeholder {
 	width: auto;
 	height: 153px;
-	border: 1px dashed #c9c9c9;
+	border: 1px dashed #ddd;
 	background-color: #eee;
 }
 .widget-modal {
@@ -2314,12 +2314,12 @@ ul.check li:last-child {
 	padding-bottom: 10px;
 	background: #f9f9f9;
 }
-.widget > header > .nav-tabs > .active > a, 
-.widget > header > .nav-tabs > .active > a:hover, 
+.widget > header > .nav-tabs > .active > a,
+.widget > header > .nav-tabs > .active > a:hover,
 .widget > header > .nav-tabs > .active > a:focus { background-color: #fefefe; }
 /* Header Switch */
-.widget > header > .switch.pull-right { 
-	margin-top: 6px; 
+.widget > header > .switch.pull-right {
+	margin-top: 6px;
 	margin-right: 10px;
 }
 .widget > header > .switch-small.pull-right { margin-top: 8px; }
@@ -2456,14 +2456,14 @@ ul.check li:last-child {
 .widget.red > header > .nav-tabs > li > a { background-color: #dc143c; color: #eee; }
 .widget.red > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.red > header > .nav-tabs > li > a,
-.widget.red > header > .nav-tabs > li.active > a, 
-.widget.red > header > .nav-tabs > li.active > a:hover, 
+.widget.red > header > .nav-tabs > li.active > a,
+.widget.red > header > .nav-tabs > li.active > a:hover,
 .widget.red > header > .nav-tabs > li.active > a:focus,
-.widget.red > header > .nav-tabs.pull-right > li > a, 
-.widget.red > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.red > header > .nav-tabs.pull-right > li > a,
+.widget.red > header > .nav-tabs.pull-right > li > a:hover,
 .widget.red > header > .nav-tabs.pull-right > li > a:focus,
-.widget.red > header > .nav-tabs > li.active:first-child > a, 
-.widget.red > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.red > header > .nav-tabs > li.active:first-child > a,
+.widget.red > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.red > header > .nav-tabs > li.active:first-child > a:focus { border-color: #c02f2f; border-bottom-color: transparent; }
 /* Dark */
 .widget.dark > header { border-bottom: 1px solid #444; background-color: #555; }
@@ -2481,14 +2481,14 @@ ul.check li:last-child {
 .widget.dark > header > .nav-tabs > li > a { background-color: #555; color: #eee; }
 .widget.dark > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.dark > header > .nav-tabs > li > a,
-.widget.dark > header > .nav-tabs > li.active > a, 
-.widget.dark > header > .nav-tabs > li.active > a:hover, 
+.widget.dark > header > .nav-tabs > li.active > a,
+.widget.dark > header > .nav-tabs > li.active > a:hover,
 .widget.dark > header > .nav-tabs > li.active > a:focus,
-.widget.dark > header > .nav-tabs.pull-right > li > a, 
-.widget.dark > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.dark > header > .nav-tabs.pull-right > li > a,
+.widget.dark > header > .nav-tabs.pull-right > li > a:hover,
 .widget.dark > header > .nav-tabs.pull-right > li > a:focus,
-.widget.dark > header > .nav-tabs > li.active:first-child > a, 
-.widget.dark > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.dark > header > .nav-tabs > li.active:first-child > a,
+.widget.dark > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.dark > header > .nav-tabs > li.active:first-child > a:focus { border-color: #444; border-bottom-color: transparent; }
 /* Teal */
 .widget.teal > header { border-bottom: 1px solid #00A0B1; background-color: #00A0B1; }
@@ -2506,14 +2506,14 @@ ul.check li:last-child {
 .widget.teal > header > .nav-tabs > li > a { background-color: #00A0B1; color: #eee; }
 .widget.teal > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.teal > header > .nav-tabs > li > a,
-.widget.teal > header > .nav-tabs > li.active > a, 
-.widget.teal > header > .nav-tabs > li.active > a:hover, 
+.widget.teal > header > .nav-tabs > li.active > a,
+.widget.teal > header > .nav-tabs > li.active > a:hover,
 .widget.teal > header > .nav-tabs > li.active > a:focus,
-.widget.teal > header > .nav-tabs.pull-right > li > a, 
-.widget.teal > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.teal > header > .nav-tabs.pull-right > li > a,
+.widget.teal > header > .nav-tabs.pull-right > li > a:hover,
 .widget.teal > header > .nav-tabs.pull-right > li > a:focus,
-.widget.teal > header > .nav-tabs > li.active:first-child > a, 
-.widget.teal > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.teal > header > .nav-tabs > li.active:first-child > a,
+.widget.teal > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.teal > header > .nav-tabs > li.active:first-child > a:focus { border-color: #00818f; border-bottom-color: transparent; }
 /* Blue */
 .widget.blue > header { border-bottom: 1px solid #2E8DEF; background-color: #2E8DEF; }
@@ -2531,14 +2531,14 @@ ul.check li:last-child {
 .widget.blue > header > .nav-tabs > li > a { background-color: #2E8DEF; color: #eee; }
 .widget.blue > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.blue > header > .nav-tabs > li > a,
-.widget.blue > header > .nav-tabs > li.active > a, 
-.widget.blue > header > .nav-tabs > li.active > a:hover, 
+.widget.blue > header > .nav-tabs > li.active > a,
+.widget.blue > header > .nav-tabs > li.active > a:hover,
 .widget.blue > header > .nav-tabs > li.active > a:focus,
-.widget.blue > header > .nav-tabs.pull-right > li > a, 
-.widget.blue > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.blue > header > .nav-tabs.pull-right > li > a,
+.widget.blue > header > .nav-tabs.pull-right > li > a:hover,
 .widget.blue > header > .nav-tabs.pull-right > li > a:focus,
-.widget.blue > header > .nav-tabs > li.active:first-child > a, 
-.widget.blue > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.blue > header > .nav-tabs > li.active:first-child > a,
+.widget.blue > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.blue > header > .nav-tabs > li.active:first-child > a:focus { border-color: #127ce9; border-bottom-color: transparent; }
 /* Purple */
 .widget.purple > header { border-bottom: 1px solid #A700AE; background-color: #A700AE; }
@@ -2556,14 +2556,14 @@ ul.check li:last-child {
 .widget.purple > header > .nav-tabs > li > a { background-color: #A700AE; color: #eee; }
 .widget.purple > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.purple > header > .nav-tabs > li > a,
-.widget.purple > header > .nav-tabs > li.active > a, 
-.widget.purple > header > .nav-tabs > li.active > a:hover, 
+.widget.purple > header > .nav-tabs > li.active > a,
+.widget.purple > header > .nav-tabs > li.active > a:hover,
 .widget.purple > header > .nav-tabs > li.active > a:focus,
-.widget.purple > header > .nav-tabs.pull-right > li > a, 
-.widget.purple > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.purple > header > .nav-tabs.pull-right > li > a,
+.widget.purple > header > .nav-tabs.pull-right > li > a:hover,
 .widget.purple > header > .nav-tabs.pull-right > li > a:focus,
-.widget.purple > header > .nav-tabs > li.active:first-child > a, 
-.widget.purple > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.purple > header > .nav-tabs > li.active:first-child > a,
+.widget.purple > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.purple > header > .nav-tabs > li.active:first-child > a:focus { border-color: #86008c; border-bottom-color: transparent; }
 /* Magenta */
 .widget.magenta > header { border-bottom: 1px solid #FF0097; background-color: #FF0097; }
@@ -2581,14 +2581,14 @@ ul.check li:last-child {
 .widget.magenta > header > .nav-tabs > li > a { background-color: #FF0097; color: #eee; }
 .widget.magenta > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.magenta > header > .nav-tabs > li > a,
-.widget.magenta > header > .nav-tabs > li.active > a, 
-.widget.magenta > header > .nav-tabs > li.active > a:hover, 
+.widget.magenta > header > .nav-tabs > li.active > a,
+.widget.magenta > header > .nav-tabs > li.active > a:hover,
 .widget.magenta > header > .nav-tabs > li.active > a:focus,
-.widget.magenta > header > .nav-tabs.pull-right > li > a, 
-.widget.magenta > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.magenta > header > .nav-tabs.pull-right > li > a,
+.widget.magenta > header > .nav-tabs.pull-right > li > a:hover,
 .widget.magenta > header > .nav-tabs.pull-right > li > a:focus,
-.widget.magenta > header > .nav-tabs > li.active:first-child > a, 
-.widget.magenta > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.magenta > header > .nav-tabs > li.active:first-child > a,
+.widget.magenta > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.magenta > header > .nav-tabs > li.active:first-child > a:focus { border-color: #dd0083; border-bottom-color: transparent; }
 /* Lime */
 .widget.lime > header { border-bottom: 1px solid #8CBF26; background-color: #8CBF26; }
@@ -2606,14 +2606,14 @@ ul.check li:last-child {
 .widget.lime > header > .nav-tabs > li > a { background-color: #8CBF26; color: #eee; }
 .widget.lime > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.lime > header > .nav-tabs > li > a,
-.widget.lime > header > .nav-tabs > li.active > a, 
-.widget.lime > header > .nav-tabs > li.active > a:hover, 
+.widget.lime > header > .nav-tabs > li.active > a,
+.widget.lime > header > .nav-tabs > li.active > a:hover,
 .widget.lime > header > .nav-tabs > li.active > a:focus,
-.widget.lime > header > .nav-tabs.pull-right > li > a, 
-.widget.lime > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.lime > header > .nav-tabs.pull-right > li > a,
+.widget.lime > header > .nav-tabs.pull-right > li > a:hover,
 .widget.lime > header > .nav-tabs.pull-right > li > a:focus,
-.widget.lime > header > .nav-tabs > li.active:first-child > a, 
-.widget.lime > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.lime > header > .nav-tabs > li.active:first-child > a,
+.widget.lime > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.lime > header > .nav-tabs > li.active:first-child > a:focus { border-color: #77a320; border-bottom-color: transparent; }
 /* Brown */
 .widget.brown > header { border-bottom: 1px solid #A05000; background-color: #A05000; }
@@ -2631,14 +2631,14 @@ ul.check li:last-child {
 .widget.brown > header > .nav-tabs > li > a { background-color: #A05000; color: #eee; }
 .widget.brown > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.brown > header > .nav-tabs > li > a,
-.widget.brown > header > .nav-tabs > li.active > a, 
-.widget.brown > header > .nav-tabs > li.active > a:hover, 
+.widget.brown > header > .nav-tabs > li.active > a,
+.widget.brown > header > .nav-tabs > li.active > a:hover,
 .widget.brown > header > .nav-tabs > li.active > a:focus,
-.widget.brown > header > .nav-tabs.pull-right > li > a, 
-.widget.brown > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.brown > header > .nav-tabs.pull-right > li > a,
+.widget.brown > header > .nav-tabs.pull-right > li > a:hover,
 .widget.brown > header > .nav-tabs.pull-right > li > a:focus,
-.widget.brown > header > .nav-tabs > li.active:first-child > a, 
-.widget.brown > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.brown > header > .nav-tabs > li.active:first-child > a,
+.widget.brown > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.brown > header > .nav-tabs > li.active:first-child > a:focus { border-color: #7e3f00; border-bottom-color: transparent; }
 /* Pink */
 .widget.pink > header { border-bottom: 1px solid #E671B8; background-color: #E671B8; }
@@ -2656,14 +2656,14 @@ ul.check li:last-child {
 .widget.pink > header > .nav-tabs > li > a { background-color: #E671B8; color: #eee; }
 .widget.pink > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.pink > header > .nav-tabs > li > a,
-.widget.pink > header > .nav-tabs > li.active > a, 
-.widget.pink > header > .nav-tabs > li.active > a:hover, 
+.widget.pink > header > .nav-tabs > li.active > a,
+.widget.pink > header > .nav-tabs > li.active > a:hover,
 .widget.pink > header > .nav-tabs > li.active > a:focus,
-.widget.pink > header > .nav-tabs.pull-right > li > a, 
-.widget.pink > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.pink > header > .nav-tabs.pull-right > li > a,
+.widget.pink > header > .nav-tabs.pull-right > li > a:hover,
 .widget.pink > header > .nav-tabs.pull-right > li > a:focus,
-.widget.pink > header > .nav-tabs > li.active:first-child > a, 
-.widget.pink > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.pink > header > .nav-tabs > li.active:first-child > a,
+.widget.pink > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.pink > header > .nav-tabs > li.active:first-child > a:focus { border-color: #e154aa; border-bottom-color: transparent; }
 /* Orange */
 .widget.orange > header { border-bottom: 1px solid #F09609; background-color: #F09609; }
@@ -2681,14 +2681,14 @@ ul.check li:last-child {
 .widget.orange > header > .nav-tabs > li > a { background-color: #F09609; color: #eee; }
 .widget.orange > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.orange > header > .nav-tabs > li > a,
-.widget.orange > header > .nav-tabs > li.active > a, 
-.widget.orange > header > .nav-tabs > li.active > a:hover, 
+.widget.orange > header > .nav-tabs > li.active > a,
+.widget.orange > header > .nav-tabs > li.active > a:hover,
 .widget.orange > header > .nav-tabs > li.active > a:focus,
-.widget.orange > header > .nav-tabs.pull-right > li > a, 
-.widget.orange > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.orange > header > .nav-tabs.pull-right > li > a,
+.widget.orange > header > .nav-tabs.pull-right > li > a:hover,
 .widget.orange > header > .nav-tabs.pull-right > li > a:focus,
-.widget.orange > header > .nav-tabs > li.active:first-child > a, 
-.widget.orange > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.orange > header > .nav-tabs > li.active:first-child > a,
+.widget.orange > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.orange > header > .nav-tabs > li.active:first-child > a:focus { border-color: #cf8208; border-bottom-color: transparent; }
 /* Green */
 .widget.green > header { border-bottom: 1px solid #3A9548; background-color: #3A9548; }
@@ -2706,14 +2706,14 @@ ul.check li:last-child {
 .widget.green > header > .nav-tabs > li > a { background-color: #3A9548; color: #eee; }
 .widget.green > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.green > header > .nav-tabs > li > a,
-.widget.green > header > .nav-tabs > li.active > a, 
-.widget.green > header > .nav-tabs > li.active > a:hover, 
+.widget.green > header > .nav-tabs > li.active > a,
+.widget.green > header > .nav-tabs > li.active > a:hover,
 .widget.green > header > .nav-tabs > li.active > a:focus,
-.widget.green > header > .nav-tabs.pull-right > li > a, 
-.widget.green > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.green > header > .nav-tabs.pull-right > li > a,
+.widget.green > header > .nav-tabs.pull-right > li > a:hover,
 .widget.green > header > .nav-tabs.pull-right > li > a:focus,
-.widget.green > header > .nav-tabs > li.active:first-child > a, 
-.widget.green > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.green > header > .nav-tabs > li.active:first-child > a,
+.widget.green > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.green > header > .nav-tabs > li.active:first-child > a:focus { border-color: #307d3c; border-bottom-color: transparent; }
 /* Yellow */
 .widget.yellow > header { border-bottom: 1px solid #E1B700; background-color: #E1B700; }
@@ -2731,20 +2731,20 @@ ul.check li:last-child {
 .widget.yellow > header > .nav-tabs > li > a { background-color: #E1B700; color: #eee; }
 .widget.yellow > header > .nav-tabs > .active > a { background-color: #fefefe; color: #555; }
 .widget.yellow > header > .nav-tabs > li > a,
-.widget.yellow > header > .nav-tabs > li.active > a, 
-.widget.yellow > header > .nav-tabs > li.active > a:hover, 
+.widget.yellow > header > .nav-tabs > li.active > a,
+.widget.yellow > header > .nav-tabs > li.active > a:hover,
 .widget.yellow > header > .nav-tabs > li.active > a:focus,
-.widget.yellow > header > .nav-tabs.pull-right > li > a, 
-.widget.yellow > header > .nav-tabs.pull-right > li > a:hover, 
+.widget.yellow > header > .nav-tabs.pull-right > li > a,
+.widget.yellow > header > .nav-tabs.pull-right > li > a:hover,
 .widget.yellow > header > .nav-tabs.pull-right > li > a:focus,
-.widget.yellow > header > .nav-tabs > li.active:first-child > a, 
-.widget.yellow > header > .nav-tabs > li.active:first-child > a:hover, 
+.widget.yellow > header > .nav-tabs > li.active:first-child > a,
+.widget.yellow > header > .nav-tabs > li.active:first-child > a:hover,
 .widget.yellow > header > .nav-tabs > li.active:first-child > a:focus { border-color: #bf9b00; border-bottom-color: transparent; }
 /* 1.6.1.7 Custom
 ----------------------------------------------------------------------------- */
 /* Login & Register */
 .widget.widget-login,
-.widget.widget-register { 
+.widget.widget-register {
 	display: block;
 	width: 300px;
 	margin: 0 auto;
@@ -2781,17 +2781,17 @@ ul.check li:last-child {
 .widget.widget-message .body .body-inner.scrollable .scroll-content { padding: 5px 15px; }
 .widget.widget-message .body-inner ul { margin: 0; }
 .widget.widget-message .body-inner ul > li {
-	margin: 10px 0; 
+	margin: 10px 0;
 	list-style: none;
 }
-.widget.widget-message .body-inner ul > li > figure { 
+.widget.widget-message .body-inner ul > li > figure {
 	position: relative;
 	margin: 0;
 	background-color: #fcfcfc;
 }
-.widget.widget-message .body-inner ul > li > figure > img { 
-	position: absolute; 
-	height: 50px; 
+.widget.widget-message .body-inner ul > li > figure > img {
+	position: absolute;
+	height: 50px;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 }
@@ -2800,13 +2800,13 @@ ul.check li:last-child {
 	position: relative;
 	margin: 0px 0px 0px 60px;
 	padding: 5px;
-	border: 1px solid #c9c9c9ddd; 
+	border: 1px solid #dddddd;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	background: #f5f5f5;
 	text-align: left;
 }
-.widget.widget-message .body-inner ul > li > figure > figcaption:after, 
+.widget.widget-message .body-inner ul > li > figure > figcaption:after,
 .widget.widget-message .body-inner ul > li > figure > figcaption:before {
 	position: absolute;
 	width: 0;
@@ -2829,8 +2829,8 @@ ul.check li:last-child {
 	border-width: 11px;
 	border-color: rgba(221, 221, 13, 0);
 }
-.widget.widget-message .body-inner ul > li.left > figure > figcaption:before { right: 100%; border-right-color: #c9c9c9ddd; }
-.widget.widget-message .body-inner ul > li.right > figure > figcaption:before { left: 100%; border-left-color: #c9c9c9ddd; }
+.widget.widget-message .body-inner ul > li.left > figure > figcaption:before { right: 100%; border-right-color: #dddddd; }
+.widget.widget-message .body-inner ul > li.right > figure > figcaption:before { left: 100%; border-left-color: #dddddd; }
 .widget.widget-message .body-inner ul > li.right > figure > figcaption {
 	margin: 0px 60px 0px 0px;
 	text-align: right;

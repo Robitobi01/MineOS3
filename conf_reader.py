@@ -1,47 +1,47 @@
-"""
-    Subclass of Configparser for sectionless configuration files.
-    Implements slicing as additional get/set methods.
-"""
+import configparser
 
-__author__ = "William Dizon"
-__license__ = "GNU GPL v3.0"
-__version__ = "0.6.0"
-__email__ = "wdchromium@gmail.com"
-
-import ConfigParser
 
 class config_file_sectionless(object):
     def __init__(self, filepath):
         self.filepath = open(filepath, 'r')
+        self.content = self.filepath.read().splitlines()
         self.fake_section = '[sectionless]\n'
+        self.count = 0
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
         self.filepath.close()
-        
-    def readline(self):
+
+    def __next__(self):
         if self.fake_section:
             try:
                 return self.fake_section
             finally:
                 self.fake_section = None
         else:
-            return self.filepath.readline()
+            self.count += 1
+            if self.count > len(self.content):
+                raise StopIteration
+            return self.content[self.count - 1]
 
-class config_file(ConfigParser.SafeConfigParser):
+    def __iter__(self):
+        return self
+
+
+class config_file(configparser.SafeConfigParser):
     def __init__(self, filepath=None):
-        ConfigParser.SafeConfigParser.__init__(self, allow_no_value=True)
+        configparser.SafeConfigParser.__init__(self, allow_no_value=True)
         self.filepath = filepath
         self.use_sections(True)
 
         try:
             self.read(self.filepath)
-        except ConfigParser.MissingSectionHeaderError:
+        except configparser.MissingSectionHeaderError:
             self.use_sections(False)
             with config_file_sectionless(self.filepath) as cf:
-                self.readfp(cf)
+                self.read_file(cf)
         except TypeError:
             if filepath is not None:
                 raise
@@ -62,32 +62,29 @@ class config_file(ConfigParser.SafeConfigParser):
             if type(option) is str:
                 try:
                     return dict(self.items(option))
-                except ConfigParser.NoSectionError:
+                except configparser.NoSectionError:
                     raise KeyError("No section: %s" % option)
             elif type(option) is slice:
                 if type(option.start) is str and type(option.stop) is str:
                     try:
                         return self.get(option.start, option.stop)
-                    except ConfigParser.NoSectionError:
+                    except configparser.NoSectionError:
                         raise KeyError(option.start)
-                    except ConfigParser.NoOptionError:
-                        #__getitem__ cannot return None as default argument
-                        #because it cannot distinguish between empty slice arg
+                    except configparser.NoOptionError:
                         if option.step is not None:
                             return option.step
                         else:
                             raise KeyError(option.start)
                 elif type(option.start) is str and \
-                     option.stop is None and \
-                     option.step is None:
+                        option.stop is None and \
+                        option.step is None:
                     try:
                         return dict(self.items(option.start))
-                    except ConfigParser.NoSectionError:
+                    except configparser.NoSectionError:
                         raise KeyError("No section: %s" % option.start)
                 else:
-                    from sys import maxint
-                    if option.start is 0 and option.stop == maxint:
-                        return {sec:dict(self.items(sec)) for sec in self.sections()}
+                    if option.start is None and option.stop is None and option.step is None:
+                        return {sec: dict(self.items(sec)) for sec in self.sections()}
                     elif type(option.start) is not str:
                         raise TypeError('First argument must be string not %s' % type(option.start))
                     else:
@@ -102,29 +99,24 @@ class config_file(ConfigParser.SafeConfigParser):
             if type(option) is str:
                 try:
                     return self.get('sectionless', option)
-                except ConfigParser.NoOptionError:
+                except configparser.NoOptionError:
                     raise KeyError(option)
             elif type(option) is slice:
                 if type(option.start) is str and option.stop is None:
                     try:
                         return self.get('sectionless', option.start)
-                    except ConfigParser.NoOptionError:
-                        #__getitem__ cannot return None as default argument
-                        #because it cannot distinguish between empty slice arg
+                    except configparser.NoOptionError:
                         if option.step is not None:
                             return option.step
                         else:
                             raise KeyError(option.start)
-                    else:
-                        raise SyntaxError(syntax_error)
                 else:
-                    from sys import maxint
-                    if option.start is 0 and option.stop == maxint and option.step is None:
+                    if option.start is None and option.stop is None and option.step is None:
                         return dict(self.items('sectionless'))
                     elif option.stop is not None:
                         raise SyntaxError(syntax_error)
                     else:
-                        raise TypeError(syntax_error)                     
+                        raise TypeError(syntax_error)
             else:
                 raise TypeError(syntax_error)
 
@@ -139,10 +131,10 @@ class config_file(ConfigParser.SafeConfigParser):
                     if option.step:
                         raise SyntaxError(syntax_error)
                     else:
-                        if type(value) in (int,str):
+                        if type(value) in (int, str):
                             try:
                                 self.set(option.start, option.stop, str(value))
-                            except ConfigParser.NoSectionError:
+                            except configparser.NoSectionError:
                                 raise KeyError('No section called %s' % option.start)
                         else:
                             raise ValueError('Value may only be int or string')
@@ -175,7 +167,7 @@ class config_file(ConfigParser.SafeConfigParser):
                 elif type(option.start) is str and type(option.stop) is str:
                     try:
                         self.remove_option(option.start, option.stop)
-                    except ConfigParser.NoSectionError:
+                    except configparser.NoSectionError:
                         raise KeyError(option.start)
                 elif type(option.start) is not str:
                     raise TypeError('Inappropriate argument type: %s' % type(option.start))
@@ -196,11 +188,11 @@ class config_file(ConfigParser.SafeConfigParser):
 
     def commit(self):
         if self._use_sections:
-            with open(self.filepath, 'wb') as configfile:
+            with open(self.filepath, 'w') as configfile:
                 self.write(configfile)
         else:
             with open(self.filepath, "w") as configfile:
-                for k,v in self.items('sectionless'):
+                for k, v in self.items('sectionless'):
                     configfile.write("%s=%s\n" % (k.strip(), v.strip()))
 
     def use_sections(self, value):
@@ -210,8 +202,7 @@ class config_file(ConfigParser.SafeConfigParser):
         else:
             try:
                 self.add_section('sectionless')
-            except ConfigParser.DuplicateSectionError:
+            except configparser.DuplicateSectionError:
                 pass
             finally:
                 self._use_sections = False
-            

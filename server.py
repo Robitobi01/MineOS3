@@ -1,16 +1,19 @@
-#!/usr/bin/env python2.7
-"""A python script to manage minecraft servers
-   Designed for use with MineOS: http://minecraft.codeemo.com
-"""
+#!/usr/bin/python3
 
-__author__ = "William Dizon"
-__license__ = "GNU GPL v3.0"
-__version__ = "0.6.0"
-__email__ = "wdchromium@gmail.com"
+import os
+import sys
+from argparse import ArgumentParser
+from subprocess import CalledProcessError
+from time import sleep
 
 import cherrypy
-import os
+from cherrypy.process.plugins import Daemonizer, PIDFile
+
+import auth
+import mounts
 from mineos import mc
+from procfs_reader import path_owner
+
 
 class cron(cherrypy.process.plugins.SimplePlugin):
     def __init__(self, base_directory, commit_delay):
@@ -19,19 +22,16 @@ class cron(cherrypy.process.plugins.SimplePlugin):
             self.commit_delay = int(commit_delay)
         except (ValueError, TypeError):
             self.commit_delay = 10
-        
-    def check_interval(self):
-        from procfs_reader import path_owner
-        from time import sleep
-        from subprocess import CalledProcessError
-        
-        crons = []
-        
-        for action in ('restart','backup','archive'):
-            for server in mc.list_servers_to_act(action, self.base_directory):
-                crons.append( (action, server) )
 
-        for server in set(s for a,s in crons):
+    def check_interval(self):
+
+        crons = []
+
+        for action in ('restart', 'backup', 'archive'):
+            for server in mc.list_servers_to_act(action, self.base_directory):
+                crons.append((action, server))
+
+        for server in set(s for a, s in crons):
             path_ = os.path.join(self.base_directory, mc.DEFAULT_PATHS['servers'], server)
             instance = mc(server, path_owner(path_), self.base_directory)
 
@@ -66,17 +66,18 @@ class cron(cherrypy.process.plugins.SimplePlugin):
                     cherrypy.log('[%s] %s exception: returncode %s' % (server, action, e.returncode))
                     cherrypy.log(e.output)
                 except RuntimeError:
-                    cherrypy.log('[%s] %s exception: server state changed since beginning of %s.' % (server, action, action))
+                    cherrypy.log(
+                        '[%s] %s exception: server state changed since beginning of %s.' % (server, action, action))
                     cherrypy.log('[%s] %s (Server Up: %s)' % (server, action, instance.up))
                     cherrypy.log('You may need to increase mineos.conf => server.commit_delay')
                 else:
                     cherrypy.log('[%s] %s return code reports success; sleeping 3sec' % (server, action))
                     sleep(3)
-                
+
         for action, server in crons:
             path_ = os.path.join(self.base_directory, mc.DEFAULT_PATHS['servers'], server)
             instance = mc(server, path_owner(path_), self.base_directory)
-            
+
             if action == 'restart':
                 if instance.up:
                     cherrypy.log('[%s] extra delay; sleeping %s seconds' % (server, self.commit_delay))
@@ -91,23 +92,10 @@ class cron(cherrypy.process.plugins.SimplePlugin):
                     cherrypy.log('[%s] started; sleeping %s seconds' % (server, self.commit_delay))
                     sleep(self.commit_delay)
 
-def tally():
-    import platform, urllib2, urllib
-    from collections import namedtuple
-
-    uname = namedtuple('uname', 'system node release version machine processor')
-    server = uname(*platform.uname())
-
-    target = 'http://minecraft.codeemo.com/tally/tally.py'
-    parameters = urllib.urlencode(dict(server._asdict()))
-
-    urllib2.urlopen(target, parameters)
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
 
-    parser = ArgumentParser(description='MineOS web user interface service',
-                            version=__version__)
+    parser = ArgumentParser(description='MineOS web user interface service')
     parser.add_argument('-p',
                         dest='port',
                         help='the port to listen on',
@@ -146,7 +134,7 @@ if __name__ == "__main__":
     cherrypy.config.update({
         'tools.sessions.on': True,
         'tools.auth.on': True
-        })
+    })
 
     if args.config_file:
         cherrypy.config.update(args.config_file)
@@ -159,63 +147,61 @@ if __name__ == "__main__":
                 'server.ssl_private_key': None,
                 'server.ssl_certificate_chain': None,
                 'server.ssl_ca_certificate': None
-                })
+            })
 
         if cherrypy.config['misc.server_as_daemon']:
-            from cherrypy.process.plugins import Daemonizer
+
             Daemonizer(cherrypy.engine).subscribe()
             cherrypy.config.update({'log.screen': False})
         else:
             cherrypy.config.update({'log.screen': True})
-            print cherrypy.config
+            print(cherrypy.config)
 
         if cherrypy.config['misc.pid_file']:
-            from cherrypy.process.plugins import PIDFile
             PIDFile(cherrypy.engine, cherrypy.config['misc.pid_file']).subscribe()
     else:
         base_dir = args.base_directory or os.path.expanduser("~")
 
         logfile = "/var/log/mineos.log"
         try:
-            with open(logfile, 'a'): pass
+            with open(logfile, 'a'):
+                pass
         except IOError:
             logfile = os.path.join(base_dir, 'mineos.log')
-        
+
         global_conf = {
             'server.socket_host': args.ip_address,
             'server.socket_port': int(args.port),
             'log.screen': not args.daemon,
             'log.error_file': logfile,
             'misc.base_directory': base_dir
-            }
+        }
 
-        if not args.http: #use https instead
+        if not args.http:  # use https instead
             if os.path.isfile('/etc/ssl/certs/mineos.crt') and \
-               os.path.isfile('/etc/ssl/certs/mineos.key'):
+                    os.path.isfile('/etc/ssl/certs/mineos.key'):
                 ssl = {
                     'server.ssl_module': 'builtin',
                     'server.ssl_certificate': '/etc/ssl/certs/mineos.crt',
                     'server.ssl_private_key': '/etc/ssl/certs/mineos.key'
-                    }
+                }
             else:
                 ssl = {
                     'server.ssl_module': 'builtin',
                     'server.ssl_certificate': 'mineos.crt',
                     'server.ssl_private_key': 'mineos.key'
-                    }  
+                }
             global_conf.update(ssl)
 
         if args.daemon:
-            from cherrypy.process.plugins import Daemonizer
             Daemonizer(cherrypy.engine).subscribe()
 
         if args.nopid:
-            from cherrypy.process.plugins import PIDFile
+
             PIDFile(cherrypy.engine, args.nopid).subscribe()
 
             if os.path.isfile(args.nopid):
-                import sys
-                print 'MineOS instance already running (PID found)'
+                print('MineOS instance already running (PID found)')
                 sys.exit(1)
 
         cherrypy.config.update(global_conf)
@@ -229,25 +215,24 @@ if __name__ == "__main__":
         '/assets': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': os.path.join(html_dir, 'assets')
-            },
+        },
         '/css': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': os.path.join(html_dir, 'css')
-            },
+        },
         '/img': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': os.path.join(html_dir, 'img')
-            },
+        },
         '/js': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': os.path.join(html_dir, 'js')
-            }
         }
+    }
 
     empty_conf = {
         '/': {}
-        }
-
+    }
     try:
         cron_instance = cron(base_dir, cherrypy.config['server.commit_delay'])
     except KeyError:
@@ -258,15 +243,9 @@ if __name__ == "__main__":
                                                           60)
         minute_crontab.subscribe()
 
-    import mounts, auth
-
-    try:
-        tally()
-    except:
-        pass
-
     cherrypy.tree.mount(mounts.Root(), "/mineos/", config=root_conf)
     cherrypy.tree.mount(mounts.ViewModel(), "/mineos/vm", config=empty_conf)
     cherrypy.tree.mount(auth.AuthController(), '/mineos/auth', config=empty_conf)
+    # os.system("sudo /usr/local/bin/mineos start")
     cherrypy.engine.start()
     cherrypy.engine.block()
