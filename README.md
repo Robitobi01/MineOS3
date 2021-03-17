@@ -4,22 +4,31 @@
 ### Custom Minecraft hosting and management scripts.
 
 
-The Web Interface is now styled in a darker theme.
+The web interface is now styled in a darker and more simple theme. It's also not using the boxed layout anymore. 
 
-There are some features in the original MineOS scripts that I didn't bother testing or that I simply removed.
-For example profiles, md5 hashes, git hash checks, legacy mc versions and more. I switched to using the default pam library and replaced the custom server list ping code by mcstatus.
+There are some features in the original MineOS scripts that I didn't bother fixing or simply removed for simplicity's sake. The profiles were useless to me and got completely removed. 
+Some other removed things include md5 hashes, git hash checks, legacy mc versions, different server types and more.
 
-The root path was changed from / to /mineos to allow reverse proxying MineOS3 on a normal webserver as a subdirectory
+I switched to using the default Python 3 pam library and replaced the custom server list ping code by mcstatus.
+
+The CSS color themes now got completely removed because they were fully replaced by the darker theme.
+
+The new config option `misc.web_root = "/"` was added to allow reverse proxying MineOS3 as a sub-directory. All the absolute paths got adjusted to either use relative paths or the new config value instead.
 
 
 **Required libraries:**
 - mcstatus
 
 **Required tools:**
-- screen
+- rdiff-backup 
 - rsync
-- rdiff-backup
-
+- screen
+- java
+- nice
+- tar
+- kill
+- wget
+  
 #
 
 All credit goes to William Dizon "hexparrot" for the original scripts | [MineOS](https://github.com/hexparrot/mineos)

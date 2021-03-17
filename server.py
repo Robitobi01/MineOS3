@@ -211,6 +211,13 @@ if __name__ == "__main__":
     else:
         mc._make_skeleton(base_dir)
 
+    web_root = cherrypy.config['misc.web_root']
+    if web_root[-1:] != '/':  # fix trailing slash
+        web_root += '/'
+    if web_root[:1] != '/':  # fix leading slash
+        web_root = '/' + web_root
+    cherrypy.config['misc.web_root'] = web_root
+
     root_conf = {
         '/assets': {
             'tools.staticdir.on': True,
@@ -227,7 +234,12 @@ if __name__ == "__main__":
         '/js': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': os.path.join(html_dir, 'js')
-        }
+        },
+        '/favicon.png':
+            {
+                'tools.staticfile.on': True,
+                'tools.staticfile.filename': os.path.join(html_dir, 'favicon.png')
+            }
     }
 
     empty_conf = {
@@ -238,14 +250,12 @@ if __name__ == "__main__":
     except KeyError:
         cron_instance = cron(base_dir, 10)
     finally:
-        minute_crontab = cherrypy.process.plugins.Monitor(cherrypy.engine,
-                                                          cron_instance.check_interval,
-                                                          60)
+        minute_crontab = cherrypy.process.plugins.Monitor(cherrypy.engine, cron_instance.check_interval, 60)
         minute_crontab.subscribe()
 
-    cherrypy.tree.mount(mounts.Root(), "/mineos/", config=root_conf)
-    cherrypy.tree.mount(mounts.ViewModel(), "/mineos/vm", config=empty_conf)
-    cherrypy.tree.mount(auth.AuthController(), '/mineos/auth', config=empty_conf)
-    # os.system("sudo /usr/local/bin/mineos start")
+    cherrypy.tree.mount(mounts.Root(), web_root, config=root_conf)
+    cherrypy.tree.mount(mounts.ViewModel(), web_root + 'vm', config=empty_conf)
+    cherrypy.tree.mount(auth.AuthController(), web_root + 'auth', config=empty_conf)
+    # os.system('sudo /usr/local/bin/mineos start')
     cherrypy.engine.start()
     cherrypy.engine.block()

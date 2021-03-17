@@ -48,9 +48,9 @@ def check_auth(*args, **kwargs):
             for condition in conditions:
                 # A condition is just a callable that returns true or false
                 if not condition():
-                    raise cherrypy.HTTPRedirect("/mineos/auth/login")
+                    raise cherrypy.HTTPRedirect(cherrypy.config['misc.web_root'] + 'auth/login')
         else:
-            raise cherrypy.HTTPRedirect("/mineos/auth/login")
+            raise cherrypy.HTTPRedirect(cherrypy.config['misc.web_root'] + 'auth/login')
 
 
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
@@ -84,7 +84,7 @@ class AuthController(object):
         return serve_file(os.path.join(self.html_directory, 'login.html'))
 
     @cherrypy.expose
-    def login(self, username=None, password=None, hide=None, from_page='/mineos/'):
+    def login(self, username=None, password=None, hide=None, from_page=None):
         if not username or not password:
             return self.get_loginform()
 
@@ -100,7 +100,7 @@ class AuthController(object):
                 cherrypy.session.regenerate()
                 cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
                 self.on_login(username)
-                raise cherrypy.HTTPRedirect("/mineos/")
+                raise cherrypy.HTTPRedirect(cherrypy.config['misc.web_root'])
             else:
                 return self.get_loginform()
 
@@ -112,4 +112,4 @@ class AuthController(object):
         if username:
             cherrypy.request.login = None
             self.on_logout(username)
-        raise cherrypy.HTTPRedirect("/mineos/index")
+        raise cherrypy.HTTPRedirect(cherrypy.config['misc.web_root'] + 'index')

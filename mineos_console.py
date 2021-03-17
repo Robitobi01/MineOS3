@@ -4,12 +4,10 @@ import os
 import pprint
 import types
 from argparse import ArgumentParser
-from collections import OrderedDict
 from getpass import getuser
 
 from mineos import mc
 from procfs_reader import path_owner
-from stock_profiles import STOCK_PROFILES
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='MineOS command line execution scripts')
@@ -86,25 +84,7 @@ if __name__ == "__main__":
             'owner': getuser(),
             'base_directory': args.base_directory
         }
-
-        if args.cmd == 'update_profile':
-            try:
-                mc(**init_args).update_profile(*arguments)
-            except RuntimeWarning as ex:
-                print(ex.message)
-        elif args.cmd == 'stock_profile':
-
-            profile = next(iter([i for i in STOCK_PROFILES if i['name'] == arguments[0]]))
-            mc(**init_args).define_profile(profile)
-        elif args.cmd == 'define_profile':
-
-            profile = OrderedDict([(k, None) for k in ('name', 'type', 'url',
-                                                       'save_as', 'run_as', 'ignore')])
-            for k, v in profile.items():
-                profile[k] = input('%s: ' % k)
-
-            mc(**init_args).define_profile(profile)
-        elif args.cmd == 'start':
+        if args.cmd == 'start':
 
             for i in mc.list_servers_start_at_boot(args.base_directory):
                 try:

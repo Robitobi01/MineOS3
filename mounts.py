@@ -3,7 +3,6 @@
 import inspect
 import os
 import types
-import procfs_reader
 from collections import defaultdict
 from grp import getgrall
 from grp import getgrgid
@@ -12,15 +11,14 @@ from json import loads
 from pwd import getpwnam
 from pwd import getpwuid
 from subprocess import CalledProcessError
-from urllib.parse import unquote
 
 import cherrypy
 from cherrypy.lib.static import serve_file
 
+import procfs_reader
 from auth import require
 from mineos import mc
 from procfs_reader import proc_loadavg
-from stock_profiles import STOCK_PROFILES
 
 
 def strongly_expire(func):
@@ -40,6 +38,15 @@ def to_jsonable_type(retval):
         return dict(retval.__dict__)
     else:
         return retval
+
+
+def exception_msg(ex):
+    if hasattr(ex, 'message'):
+        return ex.message
+    elif hasattr(ex, 'output'):
+        return ex.output
+    else:
+        return str(ex)
 
 
 class ViewModel(object):
@@ -73,7 +80,7 @@ class ViewModel(object):
 
             srv = {
                 'server_name': i,
-                'profile': instance.profile,
+                'jarfile': instance.jarfile,
                 'up': instance.up,
                 'ip_address': instance.ip_address,
                 'port': instance.port,
@@ -101,42 +108,6 @@ class ViewModel(object):
 
         return servers
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    @strongly_expire
-    def profiles(self):
-        def pdict():
-            for profile, opt_dict in mc.list_profiles(self.base_directory).items():
-                path_ = os.path.join(self.base_directory, 'profiles', profile)
-                run_as = os.path.join(path_, opt_dict['run_as'])
-                save_as = os.path.join(path_, opt_dict['save_as'])
-
-                profile_info = opt_dict
-                profile_info['profile'] = profile
-
-                if 'url' in profile_info:
-                    profile_info['version'] = mc.server_version(run_as, profile_info['url'])
-                else:
-                    profile_info['url'] = ''
-                    profile_info['version'] = ''
-
-                try:
-                    profile_info['save_as_md5'] = mc._md5sum(save_as)
-                    profile_info['save_as_mtime'] = mc._mtime(save_as)
-                except IOError:
-                    profile_info['save_as_md5'] = ''
-                    profile_info['save_as_mtime'] = ''
-
-                try:
-                    profile_info['run_as_mtime'] = mc._mtime(run_as)
-                    profile_info['run_as_md5'] = mc._md5sum(run_as)
-                except IOError:
-                    profile_info['run_as_mtime'] = ''
-                    profile_info['run_as_md5'] = ''
-
-                yield profile_info
-
-        return list(pdict())
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -189,17 +160,6 @@ class ViewModel(object):
         kb_free = dict(procfs_reader.entries('', 'meminfo'))['MemAvailable']
         gb_free = str(round(float(kb_free.split()[0]) / 1000 / 1000, 3)) + ' GB'
 
-        try:
-            pc_path = os.path.join(self.base_directory, mc.DEFAULT_PATHS['profiles'], 'profile.config')
-            mc.has_ownership(self.login, pc_path)
-        except (OSError, KeyError):
-            profile_editable = False
-        else:
-            profile_editable = True
-        finally:
-            st = os.stat(pc_path)
-            pc_group = getgrgid(st.st_gid).gr_name
-
         primary_group = getgrgid(getpwnam(self.login).pw_gid).gr_name
 
         return {
@@ -210,9 +170,6 @@ class ViewModel(object):
             'df': dict(procfs_reader.disk_free(cherrypy.config['misc.base_directory'])._asdict()),
             'groups': [i.gr_name for i in getgrall() if self.login in i.gr_mem or self.login == 'root'] + [
                 primary_group],
-            'pc_permissions': profile_editable,
-            'pc_group': pc_group,
-            'stock_profiles': [i['name'] for i in STOCK_PROFILES],
             'base_directory': self.base_directory,
         }
 
@@ -250,7 +207,6 @@ class Root(object):
     @cherrypy.expose
     @require()
     def index(self):
-
         return serve_file(os.path.join(self.html_directory, 'index.html'))
 
     @cherrypy.expose
@@ -269,68 +225,25 @@ class Root(object):
         }
 
         try:
-            if command == 'define_profile':
-                mc.has_ownership(self.login, os.path.join(self.base_directory,
-                                                          mc.DEFAULT_PATHS['profiles'],
-                                                          'profile.config'))
-
-                definition_unicode = loads(args['profile_dict'])
-                definition = {str(k): str(v) for k, v in definition_unicode.items()}
-
-                try:
-                    definition['url'] = unquote(definition['url'])
-                except KeyError:
-                    pass
-
-                if definition['name'] in list(mc.list_profiles(self.base_directory).keys()):
-                    raise KeyError('Profiles may not be modified once created')
-
-                instance = mc('throwaway', None, self.base_directory)
-                retval = instance.define_profile(definition)
-            elif command == 'update_profile':
-                mc.has_ownership(self.login, os.path.join(self.base_directory,
-                                                          mc.DEFAULT_PATHS['profiles'],
-                                                          'profile.config'))
-
-                instance = mc('throwaway', None, self.base_directory)
-                retval = instance.update_profile(**args)
-            elif command == 'remove_profile':
-                for i in mc.list_servers(self.base_directory):
-                    if mc(i, None, self.base_directory).profile == args['profile']:
-                        raise KeyError('May not remove profiles in use by 1 or more servers')
-
-                instance = mc('throwaway', None, self.base_directory)
-                retval = instance.remove_profile(**args)
-            elif command == 'stock_profile':
-
-                profile = next(iter([i for i in STOCK_PROFILES if i['name'] == args['profile']]))
-                mc('throwaway', None, self.base_directory).define_profile(profile)
-                retval = '%s profile created' % profile['name']
-            elif command == 'modify_profile':
-                mc('throwaway', None, self.base_directory).modify_profile(args['option'], args['value'],
-                                                                          args['section'])
-                retval = '%s profile updated' % args['section']
-            elif command in self.METHODS:
-
+            if command in self.METHODS:
                 try:
                     if 'base_directory' in inspect.getargspec(getattr(mc, command)).args:
-                        retval = getattr(mc, command)(base_directory=init_args['base_directory'],
-                                                      **args)
+                        retval = getattr(mc, command)(base_directory=init_args['base_directory'], **args)
                     else:
                         retval = getattr(mc, command)(**args)
                 except TypeError as ex:
-                    raise RuntimeError(ex.message)
+                    raise RuntimeError(exception_msg(ex))
             else:
                 raise RuntimeWarning('Command not found: should this be to a server?')
         except (RuntimeError, KeyError, OSError, NotImplementedError) as ex:
             response['result'] = 'error'
-            retval = ex.message
+            retval = exception_msg(ex)
         except CalledProcessError as ex:
             response['result'] = 'error'
-            retval = ex.output
+            retval = exception_msg(ex)
         except RuntimeWarning as ex:
             response['result'] = 'warning'
-            retval = ex.message
+            retval = exception_msg(ex)
         else:
             response['result'] = 'success'
 
@@ -376,13 +289,13 @@ class Root(object):
                 retval = '"%s" successfully sent to server.' % command
         except (RuntimeError, KeyError, NotImplementedError) as ex:
             response['result'] = 'error'
-            retval = ex.message
+            retval = exception_msg(ex)
         except CalledProcessError as ex:
             response['result'] = 'error'
-            retval = ex.output
+            retval = exception_msg(ex)
         except RuntimeWarning as ex:
             response['result'] = 'warning'
-            retval = ex.message
+            retval = exception_msg(ex)
         else:
             response['result'] = 'success'
 
@@ -420,13 +333,13 @@ class Root(object):
                     cherrypy.session['log_offset'] = os.stat(instance.env['log']).st_size
         except (RuntimeError, KeyError) as ex:
             response['result'] = 'error'
-            retval = ex.message
+            retval = exception_msg(ex)
         except CalledProcessError as ex:
             response['result'] = 'error'
-            retval = ex.output
+            retval = exception_msg(ex)
         except (RuntimeWarning, OSError) as ex:
             response['result'] = 'warning'
-            retval = ex.message
+            retval = exception_msg(ex)
         else:
             response['result'] = 'success'
 
@@ -478,13 +391,13 @@ class Root(object):
                     os.lchown(path_, -1, group_info.gr_gid)
         except (RuntimeError, KeyError, OSError, ValueError) as ex:
             response['result'] = 'error'
-            retval = ex.message
+            retval = exception_msg(ex)
         except CalledProcessError as ex:
             response['result'] = 'error'
-            retval = ex.output
+            retval = exception_msg(ex)
         except RuntimeWarning as ex:
             response['result'] = 'warning'
-            retval = ex.message
+            retval = exception_msg(ex)
         else:
             response['result'] = 'success'
 
@@ -514,13 +427,13 @@ class Root(object):
             instance.chgrp(getgrgid(getpwnam(self.login).pw_gid).gr_name)
         except (RuntimeError, KeyError, OSError, ValueError) as ex:
             response['result'] = 'error'
-            retval = ex.message
+            retval = exception_msg(ex)
         except CalledProcessError as ex:
             response['result'] = 'error'
-            retval = ex.output
+            retval = exception_msg(ex)
         except RuntimeWarning as ex:
             response['result'] = 'warning'
-            retval = ex.message
+            retval = exception_msg(ex)
         else:
             response['result'] = 'success'
             retval = "Server '%s' successfully imported" % server_name
@@ -553,13 +466,13 @@ class Root(object):
                 raise OSError('Group assignment to %s failed. Only the owner make change groups.' % group)
         except (RuntimeError, KeyError, OSError) as ex:
             response['result'] = 'error'
-            retval = ex.message
+            retval = exception_msg(ex)
         except CalledProcessError as ex:
             response['result'] = 'error'
-            retval = ex.output
+            retval = exception_msg(ex)
         except RuntimeWarning as ex:
             response['result'] = 'warning'
-            retval = ex.message
+            retval = exception_msg(ex)
         else:
             response['result'] = 'success'
             retval = "Server '%s' group ownership granted to '%s'" % (server_name, group)
@@ -567,42 +480,6 @@ class Root(object):
         response['payload'] = to_jsonable_type(retval)
         return response
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    @strongly_expire
-    @require()
-    def change_pc_group(self, **raw_args):
-        args = {k: str(v) for k, v in raw_args.items()}
-        group = args.pop('group')
-        retval = None
-
-        response = {
-            'result': None,
-            'cmd': 'chgrp_pc',
-            'payload': None
-        }
-
-        try:
-            if self.login == 'root':
-                instance = mc('throwaway', None, self.base_directory)
-                instance.chgrp_pc(group)
-            else:
-                raise OSError('Group assignment to %s failed. Only the superuser may make change groups.' % group)
-        except (RuntimeError, KeyError, OSError) as ex:
-            response['result'] = 'error'
-            retval = ex.message
-        except CalledProcessError as ex:
-            response['result'] = 'error'
-            retval = ex.output
-        except RuntimeWarning as ex:
-            response['result'] = 'warning'
-            retval = ex.message
-        else:
-            response['result'] = 'success'
-            retval = "profile.config group ownership granted to '%s'" % group
-
-        response['payload'] = to_jsonable_type(retval)
-        return response
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -627,13 +504,13 @@ class Root(object):
                 raise OSError('Server deletion failed. Only the server owner or root may delete servers.')
         except (RuntimeError, KeyError, OSError) as ex:
             response['result'] = 'error'
-            retval = ex.message
+            retval = exception_msg(ex)
         except CalledProcessError as ex:
             response['result'] = 'error'
-            retval = ex.output
+            retval = exception_msg(ex)
         except RuntimeWarning as ex:
             response['result'] = 'warning'
-            retval = ex.message
+            retval = exception_msg(ex)
         else:
             response['result'] = 'success'
             retval = "Server '%s' deleted" % server_name

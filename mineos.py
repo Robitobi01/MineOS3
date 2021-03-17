@@ -7,23 +7,21 @@ import subprocess
 import tarfile
 import time
 import zipfile
-from collections import defaultdict, namedtuple
+from collections import namedtuple
 from datetime import datetime
 from distutils.dir_util import copy_tree
 from distutils.spawn import find_executable
-from errno import ENOENT
 from functools import wraps
 from getpass import getuser
 from grp import getgrgid
-from hashlib import md5
 from itertools import chain
 from pwd import getpwuid, getpwnam
 from shlex import split
-from shutil import move
 from shutil import rmtree
 from string import ascii_letters, digits
 from xml.dom.minidom import parseString
 
+import cherrypy
 from mcstatus import MinecraftServer
 
 import procfs_reader
@@ -81,7 +79,6 @@ class mc(object):
         'servers': 'servers',
         'backup': 'backup',
         'archive': 'archive',
-        'profiles': 'profiles',
         'import': 'import'
     }
     BINARY_PATHS = {
@@ -94,60 +91,37 @@ class mc(object):
         'kill': find_executable('kill'),
         'wget': find_executable('wget'),
     }
-    LOG_PATHS = {
-        'legacy': 'server.log',
-        'current': os.path.join('logs', 'latest.log'),
-        'bungee': 'proxy.log.0'
-    }
 
-    def __init__(self,
-                 server_name,
-                 owner=None,
-                 base_directory=None):
+    def __init__(self, server_name, owner=None, base_directory=None):
 
         self._server_name = self.valid_server_name(server_name)
         self._owner = owner or getuser()
-        self._base_directory = base_directory or os.path.expanduser("~")
+        self._base_directory = base_directory or cherrypy.config['misc.base_directory']
 
         self._set_environment()
         try:
             self._load_config(generate_missing=True)
         except RuntimeError:
             pass
-        else:
-            if self.server_config.has_option('java', 'java_bin'):
-                self.upgrade_old_config()
 
     def _set_environment(self):
         self.server_properties = None
         self.server_config = None
-        self.profile_config = None
 
         self.env = {
             'cwd': os.path.join(self.base, self.DEFAULT_PATHS['servers'], self.server_name),
             'bwd': os.path.join(self.base, self.DEFAULT_PATHS['backup'], self.server_name),
             'awd': os.path.join(self.base, self.DEFAULT_PATHS['archive'], self.server_name),
-            'pwd': os.path.join(self.base, self.DEFAULT_PATHS['profiles'])
         }
 
         self.env.update({
             'sp': os.path.join(self.env['cwd'], 'server.properties'),
             'sc': os.path.join(self.env['cwd'], 'server.config'),
-            'pc': os.path.join(self.base, self.DEFAULT_PATHS['profiles'], 'profile.config'),
             'sp_backup': os.path.join(self.env['bwd'], 'server.properties'),
             'sc_backup': os.path.join(self.env['bwd'], 'server.config')
         })
 
-        for server_type, lp in sorted(self.LOG_PATHS.items()):
-            # implementation detail; sorted() depends on 'current' always preceeding 'legacy',
-            # to ensure that current is always tested first in the event both logfiles exist.
-            path = os.path.join(self.env['cwd'], lp)
-            if os.path.isfile(path):
-                self.env['log'] = path
-                self._server_type = server_type
-                break
-        else:
-            self._server_type = 'unknown'
+        self.env['log'] = os.path.join(self.env['cwd'], os.path.join('logs', 'latest.log'))
 
     def _load_config(self, load_backup=False, generate_missing=False):
         def load_sp():
@@ -159,13 +133,8 @@ class mc(object):
             self.server_config = config_file(self.env['sc_backup']) if load_backup else config_file(self.env['sc'])
             return self.server_config[:]
 
-        def load_profiles():
-            self.profile_config = config_file(self.env['pc'])
-            return self.profile_config[:]
-
         load_sc()
         load_sp()
-        load_profiles()
 
         if generate_missing and not load_backup:
             if self.server_properties[:] and self.server_config[:]:
@@ -178,26 +147,6 @@ class mc(object):
                 load_sp()
             else:
                 raise RuntimeError('No config files found: server.properties or server.config')
-
-    def upgrade_old_config(self):
-        def extract():
-            new_config = defaultdict(dict)
-            kept_attributes = {
-                'onreboot': ['restore', 'start'],
-                'java': ['java_tweaks', 'java_xmx', 'java_xms']
-            }
-
-            for section in kept_attributes:
-                for option in kept_attributes[section]:
-                    try:
-                        new_config[section][option] = self.server_config[section:option]
-                    except (KeyError, configparser.NoOptionError, configparser.NoSectionError):
-                        pass
-            return dict(new_config)
-
-        self._command_direct('rm -- %s' % self.env['sc'], self.env['cwd'])
-        self._create_sc(extract())
-        self._load_config()
 
     @server_exists(True)
     def _create_sp(self, startup_values={}):
@@ -235,23 +184,19 @@ class mc(object):
 
     def _create_sc(self, startup_values={}):
         defaults = {
-            'minecraft': {
-                'profile': '',
-            },
             'crontabs': {
                 'archive_interval': '',
                 'backup_interval': '',
                 'restart_interval': '',
             },
             'onreboot': {
-                'restore': False,
-                'start': False,
+                'start': True,
             },
             'java': {
                 'java_tweaks': '',
                 'java_xmx': 256,
                 'java_xms': 256,
-                'java_debug': False
+                'jarfile': 'minecraft_server.jar'
             }
         }
 
@@ -294,27 +239,19 @@ class mc(object):
             with self.server_properties as sp:
                 sp[option] = value
 
-    def modify_profile(self, option, value, section):
-        if option in ['desc']:
-            with self.profile_config as pc:
-                pc[section:option] = value
-
     @server_exists(True)
     @server_up(False)
     def start(self):
         if self.port in [s.port for s in self.list_ports_up()]:
             if (self.port, self.ip_address) in [(s.port, s.ip_address) for s in self.list_ports_up()]:
-                raise RuntimeError('Ignoring {start}; server already up at %s:%s.' % (self.ip_address, self.port))
+                raise RuntimeError('Couldn\'t start server, server already up at %s:%s.' % (self.ip_address, self.port))
             elif self.ip_address == '0.0.0.0':
                 raise RuntimeError(
-                    'Ignoring {start}; can not listen on (0.0.0.0) if port %s already in use.' % self.port)
+                    'Couldn\'t start server, can not listen on (0.0.0.0) if port %s already in use.' % self.port)
             elif any(s for s in self.list_ports_up() if s.ip_address == '0.0.0.0'):
-                raise RuntimeError('Ignoring {start}; server already listening on ip address (0.0.0.0).')
+                raise RuntimeError('Couldn\'t start server, server already listening on ip address (0.0.0.0).')
 
         self._load_config(generate_missing=True)
-        if not self.profile_current:
-            self.profile = self.profile
-
         self._command_direct(self.command_start, self.env['cwd'])
 
     @server_exists(True)
@@ -444,120 +381,6 @@ class mc(object):
             eula.write('\neula=true')
             eula.write('\n')
 
-    def remove_profile(self, profile):
-        try:
-            if self.has_ownership(self._owner, self.env['pc']):
-                rmtree(os.path.join(self.env['pwd'], profile))
-
-                with self.profile_config as pc:
-                    pc.remove_section(profile)
-        except OSError as e:
-            if e.errno == ENOENT:
-                with self.profile_config as pc:
-                    pc.remove_section(profile)
-            else:
-                raise RuntimeError('Ignoring command {remove_profile}; User does not have permissions on this profile')
-
-    def define_profile(self, profile_dict):
-        """Accepts a dictionary defining how to download and run a pieceof Minecraft server software.
-
-        profile_dict = {
-            'name': 'vanilla',
-            'type': 'standard_jar',
-            'url': 'https://s3.amazonaws.com/Minecraft.Download/versions/1.6.2/minecraft_server.1.6.2.jar',
-            'save_as': 'minecraft_server.jar',
-            'run_as': 'minecraft_server.jar',
-            'ignore': '',
-            }
-
-        """
-
-        profile_dict['run_as'] = self.valid_filename(os.path.basename(profile_dict['run_as']))
-
-        if profile_dict['type'] == 'unmanaged':
-            for i in ['save_as', 'url', 'ignore']:
-                profile_dict[i] = ''
-        else:
-            profile_dict['save_as'] = self.valid_filename(os.path.basename(profile_dict['save_as']))
-
-        with self.profile_config as pc:
-
-            try:
-                pc.add_section(profile_dict['name'])
-            except configparser.DuplicateSectionError:
-                pass
-
-            for option, value in profile_dict.items():
-                if option != 'name':
-                    pc[profile_dict['name']:option] = value
-
-    def update_profile(self, profile, expected_md5=None):
-        self._make_directory(os.path.join(self.env['pwd'], profile))
-        profile_dict = self.profile_config[profile:]
-
-        if profile_dict['type'] == 'unmanaged':
-            raise RuntimeWarning('No action taken; unmanaged profile')
-        elif profile_dict['type'] in ['archived_jar', 'standard_jar']:
-            with self.profile_config as pc:
-                pc[profile:'save_as'] = self.valid_filename(os.path.basename(pc[profile:'save_as']))
-                pc[profile:'run_as'] = self.valid_filename(os.path.basename(pc[profile:'run_as']))
-
-            old_file_path = os.path.join(self.env['pwd'], profile, profile_dict['save_as'])
-
-            try:
-                old_file_md5 = self._md5sum(old_file_path)
-            except IOError:
-                old_file_md5 = None
-            finally:
-                if expected_md5 and old_file_md5 == expected_md5:
-                    raise RuntimeWarning('Did not download; expected md5 == existing md5')
-
-            new_file_path = os.path.join(self.env['pwd'], profile, profile_dict['save_as'] + '.new')
-
-            try:
-                self._command_direct(self.command_wget_profile(profile),
-                                     os.path.join(self.env['pwd'], profile))
-            except subprocess.CalledProcessError:
-                self._command_direct(self.command_wget_profile(profile, True),
-                                     os.path.join(self.env['pwd'], profile))
-
-            new_file_md5 = self._md5sum(new_file_path)
-
-            if expected_md5 and expected_md5 != new_file_md5:
-                raise RuntimeError('Discarding download; expected md5 != actual md5')
-            elif old_file_md5 == new_file_md5:
-                os.unlink(new_file_path)
-                raise RuntimeWarning('Discarding download; new md5 == existing md5')
-
-            if profile_dict['type'] == 'archived_jar':
-
-                if zipfile.is_zipfile(new_file_path):
-                    with zipfile.ZipFile(new_file_path, mode='r') as zipchive:
-                        zipchive.extractall(os.path.join(self.env['pwd'], profile))
-                elif tarfile.is_tarfile(new_file_path):
-                    with tarfile.open(new_file_path, mode='r') as tarchive:
-                        tarchive.extractall(os.path.join(self.env['pwd'], profile))
-
-                new_run_as = os.path.join(os.path.join(self.env['pwd'], profile, profile_dict['run_as']))
-                with self.profile_config as pc:
-                    pc[profile:'save_as_md5'] = new_file_md5
-                    pc[profile:'run_as_md5'] = self._md5sum(new_run_as)
-
-                os.unlink(new_file_path)
-                return new_file_md5
-            elif profile_dict['type'] == 'standard_jar':
-
-                move(new_file_path, old_file_path)
-                active_md5 = self._md5sum(old_file_path)
-
-                with self.profile_config as pc:
-                    pc[profile:'save_as_md5'] = active_md5
-                    pc[profile:'run_as_md5'] = active_md5
-
-                return self._md5sum(old_file_path)
-        else:
-            raise NotImplementedError("This type of profile is not implemented yet.")
-
     @staticmethod
     def server_version(filepath, guess=''):
         try:
@@ -650,7 +473,7 @@ class mc(object):
 
     @property
     def java_pid(self):
-        for server, java_pid, screen_pid, base_dir in self.list_servers_up():
+        for server, java_pid, screen_pid in self.list_servers_up():
             if self.server_name == server:
                 return java_pid
         else:
@@ -658,62 +481,18 @@ class mc(object):
 
     @property
     def screen_pid(self):
-        for server, java_pid, screen_pid, base_dir in self.list_servers_up():
+        for server, java_pid, screen_pid in self.list_servers_up():
             if self.server_name == server:
                 return screen_pid
         else:
             return None
 
     @property
-    def profile(self):
+    def jarfile(self):
         try:
-            return self.server_config['minecraft':'profile'] or None
+            return self.server_config['java':'jarfile']
         except KeyError:
             return None
-
-    @profile.setter
-    def profile(self, profile):
-        try:
-            self.profile_config[profile:]
-        except KeyError:
-            raise KeyError('There is no defined profile "%s" in profile.config' % profile)
-        else:
-            with self.server_config as sc:
-
-                try:
-                    sc.add_section('minecraft')
-                except configparser.DuplicateSectionError:
-                    pass
-                finally:
-                    sc['minecraft':'profile'] = str(profile).strip()
-
-            self._command_direct(self.command_apply_profile(profile), self.env['cwd'])
-
-    @property
-    def profile_current(self):
-        def compare(profile):
-            return self._md5sum(os.path.join(self.env['pwd'],
-                                             profile,
-                                             self.profile_config[current:'run_as'])) == \
-                   self._md5sum(os.path.join(self.env['cwd'],
-                                             self.profile_config[current:'run_as']))
-
-        try:
-            current = self.profile
-            if self.profile_config[current:'type'] == 'unmanaged':
-                path_ = os.path.join(self.env['cwd'], self.profile_config[current:'run_as'])
-                if not os.path.isfile(path_):
-                    raise RuntimeError('%s does not exist' % path_)
-                else:
-                    return True
-            return compare(current)
-        except TypeError:
-            raise RuntimeError('Server is not assigned a valid profile.')
-        except IOError as e:
-
-            if e.errno == ENOENT:
-                self.profile = current
-            return compare(current)
 
     @property
     def port(self):
@@ -728,7 +507,7 @@ class mc(object):
 
     @property
     def ip_address(self):
-        return self.server_properties['server-ip'::'0.0.0.0'] or '0.0.0.0'
+        return self.server_properties['server-ip'] or '0.0.0.0'
 
     @property
     def memory(self):
@@ -778,41 +557,6 @@ class mc(object):
         return self.server_config[:]
 
     @property
-    def server_type(self):
-        return self._server_type
-
-    @property
-    def server_milestone(self):
-        jar_file = self.valid_filename(self.profile_config[self.profile:'run_as'])
-        jar_path = os.path.join(self.env['cwd'], jar_file)
-        return self.server_version(jar_path,
-                                   self.profile_config[self.profile:'url':'']) or 'unknown'
-
-    @property
-    def server_milestone_long(self):
-        try:
-            version = re.match(r'(\d)\.(\d)\.(\d)', self.server_milestone)
-            return '%s.%s.%s' % (version.group(1), version.group(2), version.group(3))
-        except (AttributeError, TypeError):
-            return '0.0.0'
-
-    @property
-    def server_milestone_short(self):
-        try:
-            version = re.match(r'(\d)\.(\d)', self.server_milestone)
-            return '%s.%s' % (version.group(1), version.group(2))
-        except (AttributeError, TypeError):
-            return '0.0'
-
-    @property
-    def ping_debug(self):
-        return ' '.join([
-            self.server_type,
-            '(%s) -' % self.server_milestone_short,
-            self.server_milestone,
-        ])
-
-    @property
     def eula(self):
         try:
             cf = config_file(os.path.join(self.env['cwd'], 'eula.txt'))
@@ -840,17 +584,9 @@ class mc(object):
             'java_xms': self.server_config['java':'java_xmx'],
             'java_tweaks': self.server_config['java':'java_tweaks':''],
             'java_debug': '',
+            'jarfile': self.server_config['java':'jarfile'],
             'jar_args': 'nogui'
         }
-
-        try:
-            jar_file = self.valid_filename(self.profile_config[self.profile:'run_as'])
-            # required_arguments['jar_file'] = jar_file
-            required_arguments['jar_file'] = os.path.join(self.env['cwd'], jar_file)
-            required_arguments['jar_args'] = self.profile_config[self.profile:'jar_args':'']
-        except (TypeError, ValueError):
-            required_arguments['jar_file'] = None
-            required_arguments['jar_args'] = None
 
         try:
             java_xms = self.server_config.getint('java', 'java_xms')
@@ -873,7 +609,7 @@ class mc(object):
         self._previous_arguments = required_arguments
         return '%(screen)s -dmS %(screen_name)s ' \
                '%(java)s -server %(java_debug)s -Xmx%(java_xmx)sM -Xms%(java_xms)sM %(java_tweaks)s ' \
-               '-jar %(jar_file)s %(jar_args)s' % required_arguments
+               '-jar %(jarfile)s %(jar_args)s' % required_arguments
 
     @property
     @sanitize
@@ -892,7 +628,6 @@ class mc(object):
             'archive_filename': os.path.join(self.env['awd'], 'server-%s_%s.tar.gz' % (
                 self.server_name, time.strftime("%Y-%m-%d_%H:%M:%S"))), 'cwd': '.'
         }
-
         self._previous_arguments = required_arguments
         return '%(nice)s -n %(nice_value)s %(tar)s czf %(archive_filename)s %(cwd)s' % required_arguments
 
@@ -906,19 +641,16 @@ class mc(object):
             'cwd': self.env['cwd'],
             'bwd': self.env['bwd']
         }
-
         self._previous_arguments = required_arguments
         return '%(nice)s -n %(nice_value)s %(rdiff)s %(cwd)s/ %(bwd)s' % required_arguments
 
     @property
     @sanitize
     def command_kill(self):
-        """Returns the command to kill a pid"""
         required_arguments = {
             'kill': self.BINARY_PATHS['kill'],
             'pid': self.screen_pid
         }
-
         self._previous_arguments = required_arguments
         return '%(kill)s %(pid)s' % required_arguments
 
@@ -931,7 +663,6 @@ class mc(object):
             'bwd': self.env['bwd'],
             'cwd': self.env['cwd']
         }
-
         self._previous_arguments = required_arguments
         return '%(rdiff)s %(force)s --restore-as-of %(step)s %(bwd)s %(cwd)s' % required_arguments
 
@@ -942,7 +673,6 @@ class mc(object):
             'step': step,
             'bwd': self.env['bwd']
         }
-
         if type(required_arguments['step']) is int:
             required_arguments['step'] = '%sB' % required_arguments['step']
 
@@ -956,7 +686,6 @@ class mc(object):
             'rdiff': self.BINARY_PATHS['rdiff-backup'],
             'bwd': self.env['bwd']
         }
-
         self._previous_arguments = required_arguments
         return '%(rdiff)s --list-increments %(bwd)s' % required_arguments
 
@@ -967,54 +696,14 @@ class mc(object):
             'rdiff': self.BINARY_PATHS['rdiff-backup'],
             'bwd': self.env['bwd']
         }
-
         self._previous_arguments = required_arguments
         return '%(rdiff)s --list-increment-sizes %(bwd)s' % required_arguments
-
-    @sanitize
-    def command_wget_profile(self, profile, no_ca=False):
-        required_arguments = {
-            'wget': self.BINARY_PATHS['wget'],
-            'newfile': os.path.join(self.env['pwd'],
-                                    profile,
-                                    self.profile_config[profile:'save_as'] + '.new'),
-            'url': self.profile_config[profile:'url'],
-            'no_ca': '--no-check-certificate' if no_ca else ''
-        }
-
-        self._previous_arguments = required_arguments
-        return '%(wget)s %(no_ca)s -O %(newfile)s %(url)s' % required_arguments
-
-    @sanitize
-    def command_apply_profile(self, profile):
-        required_arguments = {
-            'profile': profile,
-            'rsync': self.BINARY_PATHS['rsync'],
-            'pwd': os.path.join(self.env['pwd']),
-            'exclude': '',
-            'cwd': '.'
-        }
-
-        try:
-            files_to_exclude_str = self.profile_config[profile:'ignore']
-        except (TypeError, KeyError):
-            raise RuntimeError('Missing value in apply_profile command: %s' % str(required_arguments))
-        else:
-            if ',' in files_to_exclude_str:
-                files = [f.strip() for f in files_to_exclude_str.split(',')]
-            else:
-                files = [f.strip() for f in files_to_exclude_str.split()]
-            required_arguments['exclude'] = ' '.join("--exclude='%s'" % f for f in files)
-
-        self._previous_arguments = required_arguments
-        return '%(rsync)s -rlptD --chmod=ug+rw %(exclude)s %(pwd)s/%(profile)s/ %(cwd)s' % required_arguments
 
     @sanitize
     def command_delete_files(self, files):
         required_arguments = {
             'files': files,
         }
-
         self._previous_arguments = required_arguments
         return 'rm -- %(files)s' % required_arguments
 
@@ -1026,7 +715,6 @@ class mc(object):
             'backup': self.env['bwd'],
             'archive': self.env['awd']
         }
-
         self._previous_arguments = required_arguments
         return 'rm -rf -- %(live)s %(backup)s %(archive)s' % required_arguments
 
@@ -1036,7 +724,6 @@ class mc(object):
             'user': user,
             'path': path
         }
-
         self._previous_arguments = required_arguments
         return 'chown -R %(user)s %(path)s' % required_arguments
 
@@ -1046,7 +733,6 @@ class mc(object):
             'group': group,
             'path': path
         }
-
         self._previous_arguments = required_arguments
         return 'chgrp -R %(group)s %(path)s' % required_arguments
 
@@ -1062,8 +748,8 @@ class mc(object):
     @classmethod
     def list_ports_up(cls):
         instance_connection = namedtuple('instance_connection', 'server_name port ip_address')
-        for name, java, screen, base_dir in cls.list_servers_up():
-            instance = cls(name, base_directory=base_dir)
+        for name, java, screen in cls.list_servers_up():
+            instance = cls(name)
             yield instance_connection(name, instance.port, instance.ip_address)
 
     def list_increments(self):
@@ -1080,7 +766,6 @@ class mc(object):
         output_list.pop()  # empty newline throwaway
         current_string = output_list.pop()
         timestamp = current_string.partition(':')[-1].strip()
-
         return incs(timestamp, [d.strip() for d in output_list])
 
     def list_increment_sizes(self):
@@ -1112,36 +797,23 @@ class mc(object):
 
         for i in self._list_files(self.env['awd']):
             info = os.stat(os.path.join(self.env['awd'], i))
-            yield arcs(i,
-                       info.st_size,
-                       int(info.st_mtime),
-                       time.ctime(info.st_mtime),
-                       self.env['awd'])
+            yield arcs(i, info.st_size, int(info.st_mtime), time.ctime(info.st_mtime), self.env['awd'])
 
     @classmethod
     def list_servers_up(cls):
         pids = dict(procfs_reader.pid_cmdline())
-        instance_pids = namedtuple('instance_pids', 'server_name java_pid screen_pid base_dir')
+        instance_pids = namedtuple('instance_pids', 'server_name java_pid screen_pid')
 
-        def name_base():
+        def name_jarfile():
             for cmdline in pids.values():
                 if 'screen' in cmdline.lower():
                     serv = re.search(r'SCREEN.*?mc-([\w._]+).*?-jar ([\w._/]+)', cmdline, re.IGNORECASE)
                     try:
-                        yield (serv.groups()[0], serv.groups()[1])  # server_name, base_dir
+                        yield serv.groups()[0], serv.groups()[1]
                     except AttributeError:
                         continue
 
-        def find_base(directory, match_dir):
-            pair = os.path.split(directory.rstrip('/'))
-            if pair[1] == match_dir:
-                return pair[0]
-            elif not pair[1]:
-                return ''
-            else:
-                return find_base(pair[0], match_dir)
-
-        for name, base in name_base():
+        for name, jarfile in name_jarfile():
             java = None
             screen = None
 
@@ -1149,14 +821,11 @@ class mc(object):
                 if '-jar' in cmdline:
                     if 'screen' in cmdline.lower() and 'mc-%s' % name in cmdline:
                         screen = int(pid)
-                    elif '/%s/' % name in cmdline:
+                    elif jarfile in cmdline:
                         java = int(pid)
                     if java and screen:
                         break
-            yield instance_pids(name,
-                                java,
-                                screen,
-                                find_base(base, cls.DEFAULT_PATHS['servers']))
+            yield instance_pids(name, java, screen)
 
     def list_last_loglines(self, lines=100):
         try:
@@ -1201,7 +870,6 @@ class mc(object):
                     hits.append(i)
             except:
                 pass
-
         return hits
 
     @classmethod
@@ -1213,24 +881,11 @@ class mc(object):
                 owner_ = procfs_reader.path_owner(path_)
                 instance = cls(i, owner_, base_directory)
                 instance._load_config(load_backup=True)
-                if instance.server_config.getboolean('onreboot', 'restore'):
+                if instance.server_config.getboolean('onreboot'):
                     hits.append(i)
             except:
                 pass
-
         return hits
-
-    @classmethod
-    def list_profiles(cls, base_directory):
-        pc = config_file(os.path.join(base_directory, 'profiles', 'profile.config'))
-        return pc[:]
-
-    @staticmethod
-    def _md5sum(filepath):
-        with open(filepath, 'r') as infile:
-            m = md5()
-            m.update(infile.read())
-            return m.hexdigest()
 
     @staticmethod
     def _mtime(filepath):
@@ -1291,9 +946,6 @@ class mc(object):
             self._make_directory(self.env[d])
             self._command_direct(self.command_chgrp(group, self.env[d]), self.env[d])
 
-    def chgrp_pc(self, group):
-        self._command_direct('chgrp %s %s' % (group, self.env['pc']), self.env['pwd'])
-
     @staticmethod
     def _list_subdirs(directory):
         try:
@@ -1313,17 +965,6 @@ class mc(object):
         for d in cls.DEFAULT_PATHS:
             try:
                 os.makedirs(os.path.join(base_directory, d))
-            except OSError:
-                pass
-        try:
-            path_ = os.path.join(base_directory, cls.DEFAULT_PATHS['profiles'], 'profile.config')
-            with open(path_, 'a'):
-                pass
-        except IOError:
-            pass
-        else:
-            try:
-                os.chmod(path_, 0o775)
             except OSError:
                 pass
 
