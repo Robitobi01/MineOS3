@@ -98,22 +98,17 @@ def disk_usage(path):
                for filename in filenames)
 
 
-def tail(f, window=50):
-    # http://stackoverflow.com/a/7047765/1191579
-    buffersize = 1024
-    f.seek(0, 2)
-    bytes = f.tell()
-    size = window + 1
-    block = -1
-    data = []
-    while size > 0 and bytes > 0:
-        if bytes - buffersize > 0:
-            f.seek(block * buffersize, 2)
-            data.insert(0, f.read(buffersize))
-        else:
-            f.seek(0, 0)
-            data.insert(0, f.read(bytes))
-        size -= data[0].count('\n')
-        bytes -= buffersize
-        block -= 1
-    return ''.join(data).splitlines()[-window:]
+def tail(f, lines=50):
+    # https://stackoverflow.com/a/13790289
+    lines_found = []
+    block_counter = -1
+    while len(lines_found) < lines:
+        try:
+            f.seek(block_counter * 4098, os.SEEK_END)
+        except IOError:
+            f.seek(0)
+            lines_found = f.readlines()
+            break
+        lines_found = f.readlines()
+        block_counter -= 1
+    return lines_found[-lines:]
