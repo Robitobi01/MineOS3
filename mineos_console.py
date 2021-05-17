@@ -93,7 +93,7 @@ if __name__ == "__main__":
                     mc(i, owner, args.base_directory).start()
                     print(' done')
                 except Exception as ex:
-                    print(ex.message)
+                    print(ex)
         elif args.cmd == 'stop':
 
             for i in mc.list_servers_up():
@@ -105,7 +105,7 @@ if __name__ == "__main__":
                         instance = mc(srv_, owner, i.base_dir)._command_stuff(args.cmd)
                         print(' done')
                     except Exception as ex:
-                        print(ex.message)
+                        print(ex)
         elif args.cmd in ['backup', 'archive']:
 
             for i in mc.list_servers_to_act(args.cmd, args.base_directory):
@@ -115,7 +115,7 @@ if __name__ == "__main__":
                     getattr(mc, args.cmd)(i, owner, args.base_directory)
                     print(' done')
                 except Exception as ex:
-                    print(ex.message)
+                    print(ex)
         elif args.cmd == 'restore':
 
             for i in mc.list_servers_restore_at_boot(args.base_directory):
@@ -125,7 +125,7 @@ if __name__ == "__main__":
                     mc(i, owner, args.base_directory).restore()
                     print(' done')
                 except Exception as ex:
-                    print(ex.message)
+                    print(ex)
         elif args.cmd in available_properties:
             for i in sorted(mc.list_servers(args.base_directory)):
                 prop_ = getattr(mc(i, None, args.base_directory), args.cmd)

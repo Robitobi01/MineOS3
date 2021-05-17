@@ -749,7 +749,7 @@ class mc(object):
     def list_ports_up(cls):
         instance_connection = namedtuple('instance_connection', 'server_name port ip_address')
         for name, java, screen in cls.list_servers_up():
-            instance = cls(name)
+            instance = cls(name, base_directory=cls.base)
             yield instance_connection(name, instance.port, instance.ip_address)
 
     def list_increments(self):
