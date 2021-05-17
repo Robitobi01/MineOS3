@@ -1,0 +1,14 @@
+[Unit]
+Description=Minecraft server startup script
+After=mineos.service
+
+[Service]
+Type=forking
+ExecStart=/usr/mineos3/mineos_console.py start
+ExecStop=/usr/mineos3/mineos_console.py stop
+TimeoutSec=10
+KillMode=none
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target

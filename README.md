@@ -15,8 +15,16 @@ The CSS color themes now got completely removed because they were fully replaced
 
 The new config option `misc.web_root = "/"` was added to allow reverse proxying MineOS3 as a sub-directory. All the absolute paths got adjusted to either use relative paths or the new config value instead.
 
+**Setup**
+
+1. `git clone https://github.com/Robitobi01/MineOS3 /usr/mineos3` 
+2. Adjust config file as needed, then `cp mineos.conf /etc/mineos.conf`
+3. `ln -s mineos_console.py /usr/local/bin/mineos`
+4. `cp .init/* /etc/systemd/system/`
+5. `systemctl enable mineos.service && systemctl enable minecraft.service`
 
 **Required libraries:**
+- cherrypy
 - mcstatus
 
 **Required tools:**
