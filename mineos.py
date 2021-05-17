@@ -242,13 +242,13 @@ class mc(object):
     @server_exists(True)
     @server_up(False)
     def start(self):
-        if self.port in [s.port for s in self.list_ports_up()]:
-            if (self.port, self.ip_address) in [(s.port, s.ip_address) for s in self.list_ports_up()]:
+        if self.port in [s.port for s in self.list_ports_up(self.base)]:
+            if (self.port, self.ip_address) in [(s.port, s.ip_address) for s in self.list_ports_up(self.base)]:
                 raise RuntimeError('Couldn\'t start server, server already up at %s:%s.' % (self.ip_address, self.port))
             elif self.ip_address == '0.0.0.0':
                 raise RuntimeError(
                     'Couldn\'t start server, can not listen on (0.0.0.0) if port %s already in use.' % self.port)
-            elif any(s for s in self.list_ports_up() if s.ip_address == '0.0.0.0'):
+            elif any(s for s in self.list_ports_up(self.base) if s.ip_address == '0.0.0.0'):
                 raise RuntimeError('Couldn\'t start server, server already listening on ip address (0.0.0.0).')
 
         self._load_config(generate_missing=True)
@@ -746,10 +746,10 @@ class mc(object):
         )))
 
     @classmethod
-    def list_ports_up(cls):
+    def list_ports_up(cls, base):
         instance_connection = namedtuple('instance_connection', 'server_name port ip_address')
         for name, java, screen in cls.list_servers_up():
-            instance = cls(name, base_directory=cls.base)
+            instance = cls(name, base_directory=base)
             yield instance_connection(name, instance.port, instance.ip_address)
 
     def list_increments(self):

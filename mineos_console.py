@@ -85,7 +85,6 @@ if __name__ == "__main__":
             'base_directory': args.base_directory
         }
         if args.cmd == 'start':
-
             for i in mc.list_servers_start_at_boot(args.base_directory):
                 try:
                     owner = path_owner(os.path.join(args.base_directory, mc.DEFAULT_PATHS['servers'], i))
@@ -95,19 +94,16 @@ if __name__ == "__main__":
                 except Exception as ex:
                     print(ex)
         elif args.cmd == 'stop':
-
             for i in mc.list_servers_up():
-                if os.path.samefile(i.base_dir, args.base_directory):
-                    try:
-                        srv_ = i.server_name
-                        owner = path_owner(os.path.join(i.base_dir, mc.DEFAULT_PATHS['servers'], srv_))
-                        print("sending '%s' to %s..." % (args.cmd, srv_), end=' ')
-                        instance = mc(srv_, owner, i.base_dir)._command_stuff(args.cmd)
-                        print(' done')
-                    except Exception as ex:
-                        print(ex)
+                try:
+                    srv_ = i.server_name
+                    owner = path_owner(os.path.join(args.base_directory, mc.DEFAULT_PATHS['servers'], srv_))
+                    print("sending '%s' to %s..." % (args.cmd, srv_), end=' ')
+                    instance = mc(srv_, owner, args.base_directory)._command_stuff(args.cmd)
+                    print(' done')
+                except Exception as ex:
+                    print(ex)
         elif args.cmd in ['backup', 'archive']:
-
             for i in mc.list_servers_to_act(args.cmd, args.base_directory):
                 try:
                     owner = path_owner(os.path.join(args.base_directory, mc.DEFAULT_PATHS['servers'], i))
@@ -117,7 +113,6 @@ if __name__ == "__main__":
                 except Exception as ex:
                     print(ex)
         elif args.cmd == 'restore':
-
             for i in mc.list_servers_restore_at_boot(args.base_directory):
                 try:
                     owner = path_owner(os.path.join(args.base_directory, mc.DEFAULT_PATHS['backup'], i))
