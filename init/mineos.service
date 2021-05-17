@@ -5,7 +5,7 @@ Description=MineOS webui startup script
 Type=forking
 ExecStart=/usr/mineos3/server.py -c /etc/mineos.conf
 User=root
-PIDFile=/run/mineos.pid
+PIDFile=/var/run/mineos.pid
 
 [Install]
 WantedBy=multi-user.target
