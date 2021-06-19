@@ -37,6 +37,10 @@ The new config option `misc.web_root = "/"` was added to allow reverse proxying 
 - kill
 - wget
   
+**If [needrestart](https://github.com/liske/needrestart) is used:**
+- In the config file /etc/needrestart/needrestart.conf remove comments around the list $nrconf{blacklist_rc}
+- Add the regex line `qr(^mine),` to the $nrconf{blacklist_rc} list
+
 #
 
 All credit goes to William Dizon "hexparrot" for the original scripts | [MineOS](https://github.com/hexparrot/mineos)
