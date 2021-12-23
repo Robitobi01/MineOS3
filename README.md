@@ -17,9 +17,9 @@ The new config option `misc.web_root = "/"` was added to allow reverse proxying 
 
 **Setup**
 
-1. `git clone https://github.com/Robitobi01/MineOS3 /usr/mineos3` 
+1. `git clone https://github.com/Robitobi01/MineOS3 /usr/share/mineos3` 
 2. Adjust config file as needed, then `cp mineos.conf /etc/mineos.conf`
-3. `ln -s mineos_console.py /usr/local/bin/mineos`
+3. `ln -s mineos_console.py /usr/bin/mineos`
 4. `cp .init/* /etc/systemd/system/`
 5. `systemctl enable mineos.service && systemctl enable minecraft.service`
 
